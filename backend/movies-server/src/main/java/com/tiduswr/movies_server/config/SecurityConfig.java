@@ -17,7 +17,7 @@ public class SecurityConfig {
     private boolean csrfEnabled;
 
     @Bean
-    private SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
         http
             .authorizeHttpRequests(
