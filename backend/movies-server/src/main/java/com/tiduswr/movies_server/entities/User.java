@@ -3,6 +3,10 @@ package com.tiduswr.movies_server.entities;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.tiduswr.movies_server.controller.dto.LoginRequest;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,14 +16,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "tb_users")
-@Getter @Setter @Builder @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter @Setter 
+@NoArgsConstructor @AllArgsConstructor 
+@Builder 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     
     @Id
@@ -41,5 +50,9 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.password(), this.password);
+    }
 
 }

@@ -6,10 +6,12 @@ import java.security.interfaces.RSAPublicKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -34,11 +36,13 @@ public class SecurityConfig {
     private boolean csrfEnabled;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
         http
             .authorizeHttpRequests(
-                authorize -> authorize.anyRequest().authenticated()
+                authorize -> authorize
+                    .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                    .anyRequest().authenticated()
             )
             .csrf(csrf -> {
                 if(!csrfEnabled) csrf.disable();
@@ -50,7 +54,7 @@ public class SecurityConfig {
     }
 
     @Bean  
-    public JwtEncoder jwtEncoder() {  
+    JwtEncoder jwtEncoder() {  
         // Cria uma chave JWK (JSON Web Key) a partir da chave pública e privada RSA  
         var jwk = new RSAKey.Builder(pubKey)  
                         .privateKey(privKey)  // Define a chave privada  
@@ -64,10 +68,14 @@ public class SecurityConfig {
     }  
 
     @Bean  
-    public JwtDecoder jwtDecoder() {  
+    JwtDecoder jwtDecoder() {  
         // Retorna um decodificador JWT utilizando a chave pública RSA  
         return NimbusJwtDecoder.withPublicKey(pubKey).build();  
     }  
 
+    @Bean
+    BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 
 }
