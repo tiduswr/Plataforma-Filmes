@@ -3,7 +3,6 @@ package com.tiduswr.movies_server.config;
 import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.tiduswr.movies_server.entities.Role;
@@ -13,7 +12,7 @@ import com.tiduswr.movies_server.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
-@Configuration
+// @Configuration
 public class AdminConfig implements CommandLineRunner{
     
     private RoleRepository roleRepository;
@@ -29,13 +28,14 @@ public class AdminConfig implements CommandLineRunner{
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        
+        System.out.println("\u001B[31m!!! CUIDADO !!!\u001B[0m Script de teste de criação do usuário sendo executado!");
+
         var roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
         var userOpt = userRepository.findByUsername("admin");
 
         userOpt.ifPresentOrElse(
             user -> {
-                System.out.println("O usuário já existe!");
+                System.out.println("O usuário ADMIN teste já existe!");
             },
             () -> {
                 var user = User.builder()

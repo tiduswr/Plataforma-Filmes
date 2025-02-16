@@ -1,2 +1,2 @@
--- Apenas para testes
-INSERT INTO tb_roles (role_id, name) VALUES (1, 'admin'), (2, 'user')
+INSERT IGNORE INTO tb_roles (role_id, name) VALUES (1, 'ADMIN');
+INSERT IGNORE INTO tb_roles (role_id, name) VALUES (2, 'USER');

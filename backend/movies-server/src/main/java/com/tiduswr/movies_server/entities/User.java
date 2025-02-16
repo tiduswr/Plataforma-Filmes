@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.tiduswr.movies_server.controller.dto.LoginRequest;
+import com.tiduswr.movies_server.entities.dto.LoginRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,12 +35,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     @EqualsAndHashCode.Include
     @Column(name = "user_id")
-    private UUID userUuid;
-
+    private UUID userId;
+    
+    @Column(unique = true, nullable = false, length = 30)
     private String username;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, length = 125)
     private String name;
 
     @ManyToMany
