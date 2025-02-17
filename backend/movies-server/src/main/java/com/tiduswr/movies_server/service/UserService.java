@@ -20,9 +20,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserService {
     
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder encoder;
-    private RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder;
+    private final RoleRepository roleRepository;
 
     public RegisterResponse basicUserRegister(RegisterRequest request){
 
@@ -44,13 +44,10 @@ public class UserService {
             .password(encoder.encode(request.password()))
             .roles(Set.of(roleBasic))
         .build();
+        
         var savedUser = userRepository.save(newUser);
 
-        return new RegisterResponse(
-            savedUser.getUserId().toString(), 
-            savedUser.getUsername(), 
-            savedUser.getName()
-        );
+        return RegisterResponse.from(savedUser);
     }
 
 }

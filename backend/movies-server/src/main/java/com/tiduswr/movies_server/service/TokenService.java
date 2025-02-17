@@ -19,9 +19,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class TokenService {
     
-    private JwtEncoder jwtEncoder;
-    private BCryptPasswordEncoder encoder;
-    private UserRepository userRepository;
+    private final JwtEncoder jwtEncoder;
+    private final BCryptPasswordEncoder encoder;
+    private final UserRepository userRepository;
 
     public LoginResponse tokenGenerate(LoginRequest loginRequest){
         var user = userRepository.findByUsername(loginRequest.username());
@@ -30,8 +30,8 @@ public class TokenService {
             throw new BadCredentialsException("Usuário ou senha inválidos");
         }
 
-        var now = Instant.now();
-        var expiresIn = 300L;
+        final Instant now = Instant.now();
+        final long expiresIn = 8600; // Em produção seria melhor usar access e refresh tokens
 
         var claims = JwtClaimsSet.builder()
             .issuer("PlatFilmes")

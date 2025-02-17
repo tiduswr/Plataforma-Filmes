@@ -14,15 +14,14 @@ import com.tiduswr.movies_server.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
     
-    private UserService userService;
+    private final UserService userService;
 
-    @PostMapping("/register")    
+    @PostMapping("/basic/register")    
     public ResponseEntity<RegisterResponse> newUser(@Valid @RequestBody RegisterRequest registerRequest){
 
         var response = userService.basicUserRegister(registerRequest);

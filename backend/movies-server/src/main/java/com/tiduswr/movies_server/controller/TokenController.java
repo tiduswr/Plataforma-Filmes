@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class TokenController {
     
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
