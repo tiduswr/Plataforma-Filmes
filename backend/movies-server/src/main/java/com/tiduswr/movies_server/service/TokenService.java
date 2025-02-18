@@ -38,6 +38,7 @@ public class TokenService {
             .subject(user.get().getUserId().toString())
             .issuedAt(now)
             .expiresAt(now.plusSeconds(expiresIn))
+            .claim("roles", user.get().getRoles())
             .build();
         
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

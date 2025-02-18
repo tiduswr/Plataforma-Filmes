@@ -1,4 +1,4 @@
-package com.tiduswr.movies_server.config;
+package com.tiduswr.movies_server.config.minio;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

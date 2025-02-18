@@ -3,12 +3,13 @@ package com.tiduswr.movies_server.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tiduswr.movies_server.exceptions.UploadFailException;
+import com.tiduswr.movies_server.exceptions.MinioFailException;
 
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -59,12 +60,25 @@ public class MinioService {
             return fullFileName;
 
         }catch(Exception ex){
-            throw new UploadFailException("O upload não pôde ser concluído", ex);
+            throw new MinioFailException("O upload não pôde ser concluído", ex);
         }
         
     }
 
-    public String sanitizeFileName(String fileName) {
+    public void deleteFile(String fileName, String bucketName) {
+        try {
+            minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .build()
+            );
+        } catch (Exception ex) {
+            throw new MinioFailException("Erro ao deletar o arquivo", ex);
+        }
+    }
+
+    private String sanitizeFileName(String fileName) {
         // Remove caracteres inválidos (exceto letras, números, hífens, underscores e pontos)
         String sanitized = fileName.replaceAll("[^a-zA-Z0-9._-]", "_");
     

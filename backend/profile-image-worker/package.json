@@ -1,0 +1,21 @@
+{
+  "name": "profile-image-worker",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "amqplib": "^0.10.5",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "ioredis": "^5.5.0",
+    "minio": "^8.0.4",
+    "sharp": "^0.33.5"
+  }
+}

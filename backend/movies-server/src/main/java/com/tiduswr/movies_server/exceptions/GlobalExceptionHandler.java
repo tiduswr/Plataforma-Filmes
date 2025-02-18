@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.amqp.AmqpException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMessageResponse(ex.getMessage()));
     }
 
-    @ExceptionHandler(UploadFailException.class)
-    public ResponseEntity<ErrorFullMessageResponse> handleUploadFail(UploadFailException ex){
+    @ExceptionHandler(MinioFailException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleUploadFail(MinioFailException ex){
 
         var genericException = ex.getException();
         HttpStatusCode statusCode;
@@ -81,6 +82,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorFullMessageResponse("Erro interno", ex.getMessage()));
+    }
+    
+    @ExceptionHandler(AmqpException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleAmqpException(AmqpException ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorFullMessageResponse("Erro de comunicação com o RabbitMQ", ex.getMessage()));
+    }
+
+    @ExceptionHandler(JsonProcessingFailException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleJsonProcessingFail(JsonProcessingFailException ex){
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorFullMessageResponse("Erro na conversão: Object -> JSON", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ImageProcessingException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleJsonProcessingFail(ImageProcessingException ex){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorFullMessageResponse("Erro no processamento da imagem", ex.getMessage()));
     }
 
 }

@@ -1,0 +1,32 @@
+# Node modules
+/node_modules/
+
+# Logs
+*.log
+logs/
+
+# Ambiente de produção
+.env
+.env.local
+.env.*.local
+
+# Diretórios de build
+/dist/
+/build/
+
+# Sistema de operações
+.DS_Store
+Thumbs.db
+
+# Arquivos de dependências do sistema
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos gerados pelo IDE
+.vscode/
+.idea/
+
+# Arquivos temporários
+*.swp
+*.swo

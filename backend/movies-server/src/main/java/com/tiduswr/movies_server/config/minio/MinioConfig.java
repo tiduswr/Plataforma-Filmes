@@ -1,4 +1,4 @@
-package com.tiduswr.movies_server.config;
+package com.tiduswr.movies_server.config.minio;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
