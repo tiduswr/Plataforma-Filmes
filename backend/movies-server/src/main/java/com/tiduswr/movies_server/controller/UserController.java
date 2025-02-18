@@ -16,7 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tiduswr.movies_server.exceptions.ImageProcessingException;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
-import com.tiduswr.movies_server.models.dto.RegisterResponse;
+import com.tiduswr.movies_server.models.dto.UpdateRequest;
+import com.tiduswr.movies_server.models.dto.UserResponse;
 import com.tiduswr.movies_server.service.UserService;
 
 import jakarta.validation.Valid;
@@ -35,11 +36,23 @@ public class UserController {
     }
 
     @PostMapping("/basic/register")    
-    public ResponseEntity<RegisterResponse> newUser(@Valid @RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<UserResponse> newUser(@Valid @RequestBody RegisterRequest registerRequest){
 
         var response = userService.basicUserRegister(registerRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<UserResponse> updateUser(
+        @Valid @RequestBody UpdateRequest updateRequest,
+        @AuthenticationPrincipal Jwt jwt
+    ){
+
+        var userId = jwt.getSubject();
+        var response = userService.basicUserUpdate(updateRequest, userId);
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/profile-image")

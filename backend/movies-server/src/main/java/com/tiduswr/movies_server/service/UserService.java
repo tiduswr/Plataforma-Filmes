@@ -6,19 +6,23 @@ import java.util.UUID;
 import org.springframework.amqp.AmqpException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tiduswr.movies_server.config.minio.MinioBuckets;
 import com.tiduswr.movies_server.config.rbmq.QueueType;
 import com.tiduswr.movies_server.exceptions.ConflictException;
+import com.tiduswr.movies_server.exceptions.DuplicateDatabaseEntryException;
 import com.tiduswr.movies_server.exceptions.ImageProcessingException;
 import com.tiduswr.movies_server.exceptions.InternalServerError;
 import com.tiduswr.movies_server.exceptions.JsonProcessingFailException;
+import com.tiduswr.movies_server.exceptions.NotFoundException;
 import com.tiduswr.movies_server.models.Role;
 import com.tiduswr.movies_server.models.User;
 import com.tiduswr.movies_server.models.dto.ImageTask;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
-import com.tiduswr.movies_server.models.dto.RegisterResponse;
+import com.tiduswr.movies_server.models.dto.UpdateRequest;
+import com.tiduswr.movies_server.models.dto.UserResponse;
 import com.tiduswr.movies_server.repository.RoleRepository;
 import com.tiduswr.movies_server.repository.UserRepository;
 
@@ -34,7 +38,8 @@ public class UserService {
     private final TaskPublisherService taskPublisher;
     private final MinioService minioService;
 
-    public RegisterResponse basicUserRegister(RegisterRequest request){
+    @Transactional
+    public UserResponse basicUserRegister(RegisterRequest request){
 
         var roleBasic = roleRepository.findByName(Role.Values.USER.name()).orElseThrow(
             () -> new InternalServerError("Role USER não encontrada!")
@@ -57,7 +62,33 @@ public class UserService {
         
         var savedUser = userRepository.save(newUser);
 
-        return RegisterResponse.from(savedUser);
+        return UserResponse.from(savedUser);
+    }
+
+    @Transactional
+    public UserResponse basicUserUpdate(UpdateRequest request, String userId){
+        
+        var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
+            () -> new NotFoundException("O usuário não foi encontrado")
+        );
+        
+        if(request.username() != null){
+            if(userRepository.existsByUsername(request.username())) {
+                throw new DuplicateDatabaseEntryException("Este username já está em uso.");
+            }
+            user.setUsername(request.username());
+        }
+
+        if(request.name() != null)
+            user.setName(request.name());
+
+        if(request.password() != null)
+            user.setPassword(encoder.encode(request.password()));
+
+        var updatedUser = userRepository.save(user);
+
+        return UserResponse.from(updatedUser);
+
     }
 
     public void publishUserImageTask(String userId, MultipartFile file){
@@ -89,7 +120,7 @@ public class UserService {
             deleteMinioFile(fileName, bucketName);
             throw new ImageProcessingException(ex.getMessage());
         }
-    }    
+    }
 
     private void deleteMinioFile(String fileName, String bucketName){
         if (fileName != null) {

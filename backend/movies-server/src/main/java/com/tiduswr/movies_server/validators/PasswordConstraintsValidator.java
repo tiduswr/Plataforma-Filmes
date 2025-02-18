@@ -14,16 +14,32 @@ import org.springframework.stereotype.Component;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import lombok.AllArgsConstructor;
 
 @Component
-@AllArgsConstructor
 public class PasswordConstraintsValidator implements ConstraintValidator<Password, String> {
 
     private PropertiesMessageResolver propertiesMessageResolver;
+    private boolean nullable;
+
+    public PasswordConstraintsValidator(PropertiesMessageResolver propertiesMessageResolver){
+        this.propertiesMessageResolver = propertiesMessageResolver;
+    }
+
+    @Override
+    public void initialize(Password constraint){
+        this.nullable = constraint.nullable();
+    }
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
+
+        if (nullable && password == null) {
+            return true;
+        }
+
+        if (password == null) {
+            return false;
+        }
 
         PasswordValidator passwordValidator = new PasswordValidator(
                 propertiesMessageResolver,
@@ -57,7 +73,6 @@ public class PasswordConstraintsValidator implements ConstraintValidator<Passwor
 
         }
         
-        //Sending one message each time failed validation. 
         constraintValidatorContext.buildConstraintViolationWithTemplate(passwordValidator.getMessages(result).stream().findFirst().get())
                 .addConstraintViolation()
                 .disableDefaultConstraintViolation();

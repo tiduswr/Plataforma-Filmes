@@ -29,8 +29,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageResponse(ex.getMessage()));
     }
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorMessageResponse> handleConflict(ConflictException ex){
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorMessageResponse> handleBadCredentials(NotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler({ConflictException.class, DuplicateDatabaseEntryException.class})
+    public ResponseEntity<ErrorMessageResponse> handleConflict(RuntimeException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMessageResponse(ex.getMessage()));
     }
 
