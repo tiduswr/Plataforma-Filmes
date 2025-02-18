@@ -9,8 +9,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import com.tiduswr.movies_server.entities.dto.LoginRequest;
-import com.tiduswr.movies_server.entities.dto.LoginResponse;
+import com.tiduswr.movies_server.models.dto.LoginRequest;
+import com.tiduswr.movies_server.models.dto.LoginResponse;
 import com.tiduswr.movies_server.repository.UserRepository;
 
 import lombok.AllArgsConstructor;

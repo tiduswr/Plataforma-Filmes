@@ -10,15 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tiduswr.movies_server.config.minio.MinioBuckets;
 import com.tiduswr.movies_server.config.rbmq.QueueType;
-import com.tiduswr.movies_server.entities.Role;
-import com.tiduswr.movies_server.entities.User;
-import com.tiduswr.movies_server.entities.dto.ImageTask;
-import com.tiduswr.movies_server.entities.dto.RegisterRequest;
-import com.tiduswr.movies_server.entities.dto.RegisterResponse;
 import com.tiduswr.movies_server.exceptions.ConflictException;
 import com.tiduswr.movies_server.exceptions.ImageProcessingException;
 import com.tiduswr.movies_server.exceptions.InternalServerError;
 import com.tiduswr.movies_server.exceptions.JsonProcessingFailException;
+import com.tiduswr.movies_server.models.Role;
+import com.tiduswr.movies_server.models.User;
+import com.tiduswr.movies_server.models.dto.ImageTask;
+import com.tiduswr.movies_server.models.dto.RegisterRequest;
+import com.tiduswr.movies_server.models.dto.RegisterResponse;
 import com.tiduswr.movies_server.repository.RoleRepository;
 import com.tiduswr.movies_server.repository.UserRepository;
 

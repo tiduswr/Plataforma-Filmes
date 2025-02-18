@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tiduswr.movies_server.entities.dto.LoginRequest;
-import com.tiduswr.movies_server.entities.dto.LoginResponse;
+import com.tiduswr.movies_server.models.dto.LoginRequest;
+import com.tiduswr.movies_server.models.dto.LoginResponse;
 import com.tiduswr.movies_server.service.TokenService;
 
 import lombok.AllArgsConstructor;

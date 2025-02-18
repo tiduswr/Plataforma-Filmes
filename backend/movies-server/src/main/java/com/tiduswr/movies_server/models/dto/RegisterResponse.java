@@ -1,6 +1,6 @@
-package com.tiduswr.movies_server.entities.dto;
+package com.tiduswr.movies_server.models.dto;
 
-import com.tiduswr.movies_server.entities.User;
+import com.tiduswr.movies_server.models.User;
 
 public record RegisterResponse(
     String user_id,

@@ -1,11 +1,11 @@
-package com.tiduswr.movies_server.entities;
+package com.tiduswr.movies_server.models;
 
 import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.tiduswr.movies_server.entities.dto.LoginRequest;
+import com.tiduswr.movies_server.models.dto.LoginRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

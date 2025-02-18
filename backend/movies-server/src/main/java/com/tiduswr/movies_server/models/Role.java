@@ -1,4 +1,4 @@
-package com.tiduswr.movies_server.entities;
+package com.tiduswr.movies_server.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

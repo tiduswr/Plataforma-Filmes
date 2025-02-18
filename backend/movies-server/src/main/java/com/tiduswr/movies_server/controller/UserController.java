@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tiduswr.movies_server.entities.dto.RegisterRequest;
-import com.tiduswr.movies_server.entities.dto.RegisterResponse;
 import com.tiduswr.movies_server.exceptions.ImageProcessingException;
+import com.tiduswr.movies_server.models.dto.RegisterRequest;
+import com.tiduswr.movies_server.models.dto.RegisterResponse;
 import com.tiduswr.movies_server.service.UserService;
 
 import jakarta.validation.Valid;

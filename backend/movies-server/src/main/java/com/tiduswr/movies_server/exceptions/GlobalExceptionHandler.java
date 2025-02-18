@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MultipartException;
 
-import com.tiduswr.movies_server.entities.dto.ErrorFullMessageResponse;
-import com.tiduswr.movies_server.entities.dto.ErrorMessageResponse;
-import com.tiduswr.movies_server.entities.dto.FieldErrorMessageResponse;
+import com.tiduswr.movies_server.models.dto.ErrorFullMessageResponse;
+import com.tiduswr.movies_server.models.dto.ErrorMessageResponse;
+import com.tiduswr.movies_server.models.dto.FieldErrorMessageResponse;
 
 import io.minio.errors.MinioException;
 

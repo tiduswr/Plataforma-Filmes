@@ -1,4 +1,4 @@
-package com.tiduswr.movies_server.entities.dto;
+package com.tiduswr.movies_server.models.dto;
 
 import com.tiduswr.movies_server.validators.Password;
 

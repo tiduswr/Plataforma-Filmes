@@ -5,8 +5,8 @@ import java.util.Set;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.tiduswr.movies_server.entities.Role;
-import com.tiduswr.movies_server.entities.User;
+import com.tiduswr.movies_server.models.Role;
+import com.tiduswr.movies_server.models.User;
 import com.tiduswr.movies_server.repository.RoleRepository;
 import com.tiduswr.movies_server.repository.UserRepository;
 

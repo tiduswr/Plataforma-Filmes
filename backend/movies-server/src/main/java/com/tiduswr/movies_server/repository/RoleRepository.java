@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.tiduswr.movies_server.entities.Role;
+import com.tiduswr.movies_server.models.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>{
