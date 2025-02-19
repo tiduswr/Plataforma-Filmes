@@ -1,10 +1,4 @@
-import { ReactNode } from "react";
-
-interface LinkProps {
-    url: string;
-    children: ReactNode;
-    className?: string;
-}
+import { LinkProps } from "./types";
 
 const LinkButton = ({url = "#", children, className} : LinkProps) => {
     return (

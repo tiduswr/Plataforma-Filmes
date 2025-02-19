@@ -1,13 +1,5 @@
 import clsx from "clsx";
-import { ReactNode } from "react";
-
-interface UnderlineHoverLinkProps {
-  title: string;
-  icon: ReactNode;
-  prepEndIcon?: boolean;
-  hoverColor?: string;
-  desc?: string;
-}
+import { UnderlineHoverLinkProps } from "./types";
 
 const UnderlineHoverLink = ({
   title,

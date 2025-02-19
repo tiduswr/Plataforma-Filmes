@@ -1,10 +1,10 @@
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import { FaRegComments } from "react-icons/fa";
 import { GrGroup } from "react-icons/gr";
 import { LuSearch, LuVideo } from "react-icons/lu";
-import Footer from "./components/Footer";
-import Header from "./components/Header";
 
-function App() {
+function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -56,4 +56,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

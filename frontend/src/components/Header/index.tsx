@@ -1,9 +1,9 @@
+import LinkButton from "@/components/LinkButton";
+import UnderlineHoverButton from "@/components/UnderlineHoverLink";
+import { HEADER_LINKS, HeaderLink, LOGIN_LINK } from "@/links";
 import { useState } from "react";
 import { CiLogin, CiMenuBurger } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
-import { HEADER_LINKS, HeaderLink, LOGIN_LINK } from "../links";
-import LinkButton from "./LinkButton";
-import UnderlineHoverButton from "./UnderlineHoverLink";
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -1,7 +1,7 @@
 import { IconType } from "react-icons";
 import { CiLogin, CiVideoOn } from "react-icons/ci";
 
-interface HeaderLink{
+type HeaderLink = {
     url: string;
     title: string;
     desc: string;
