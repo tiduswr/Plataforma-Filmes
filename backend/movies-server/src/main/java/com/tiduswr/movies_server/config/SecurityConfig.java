@@ -42,7 +42,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 authorize -> authorize
                     .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/users/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/users/basic/register").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/users/profile-image/**").permitAll()
                     .anyRequest().authenticated()
             )
             .csrf(csrf -> {

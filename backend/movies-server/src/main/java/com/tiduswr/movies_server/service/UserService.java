@@ -19,6 +19,7 @@ import com.tiduswr.movies_server.exceptions.JsonProcessingFailException;
 import com.tiduswr.movies_server.exceptions.NotFoundException;
 import com.tiduswr.movies_server.models.Role;
 import com.tiduswr.movies_server.models.User;
+import com.tiduswr.movies_server.models.UserImageType;
 import com.tiduswr.movies_server.models.dto.ImageTask;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
 import com.tiduswr.movies_server.models.dto.UpdateRequest;
@@ -119,6 +120,33 @@ public class UserService {
         } catch (Exception ex) {
             deleteMinioFile(fileName, bucketName);
             throw new ImageProcessingException(ex.getMessage());
+        }
+    }
+
+    public byte[] readUserImage(String userId, UserImageType type){
+        var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
+            () -> new NotFoundException("Usuário não encontrado")
+        );
+
+        String typeConcat;
+        switch (type) {
+            case BIG:
+                typeConcat = "_big";
+                break;
+            case SMALL:
+                typeConcat = "_small";
+                break;
+            default:
+                throw new ImageProcessingException("Tipo de imagem não reconhecido");
+        }
+
+        String filename = user.getUserId().toString() + typeConcat + ".png";
+        var fileIs = minioService.getFile(filename, MinioBuckets.USER_IMAGE.getBucketName());
+        
+        try{
+            return fileIs.readAllBytes();
+        }catch (Exception ex){
+            throw new InternalServerError("Erro ao converter imagem no Servidor");
         }
     }
 

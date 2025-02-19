@@ -13,17 +13,33 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 
 import com.tiduswr.movies_server.models.dto.ErrorFullMessageResponse;
 import com.tiduswr.movies_server.models.dto.ErrorMessageResponse;
 import com.tiduswr.movies_server.models.dto.FieldErrorMessageResponse;
 
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidResponseException;
 import io.minio.errors.MinioException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        String message = "O valor '" + ex.getValue() + "' não é válido para o parâmetro '" + ex.getName() + "'.";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorFullMessageResponse(message, ex.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessageResponse> handleMethodArgumentTypeMismatchException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageResponse(ex.getMessage()));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorMessageResponse> handleBadCredentials(BadCredentialsException ex){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageResponse(ex.getMessage()));
@@ -40,8 +56,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MinioFailException.class)
-    public ResponseEntity<ErrorFullMessageResponse> handleUploadFail(MinioFailException ex){
-
+    public ResponseEntity<ErrorFullMessageResponse> handleMinioFail(MinioFailException ex) {
         var genericException = ex.getException();
         HttpStatusCode statusCode;
         String message;
@@ -49,15 +64,28 @@ public class GlobalExceptionHandler {
         if (genericException instanceof IOException || genericException instanceof IllegalArgumentException) {
             statusCode = HttpStatus.BAD_REQUEST;
             message = "Erro ao ler o arquivo";
+        } else if (genericException instanceof ErrorResponseException) {
+            statusCode = HttpStatus.NOT_FOUND;
+            message = "Arquivo ou bucket não encontrado no MinIO";
+        } else if (genericException instanceof InsufficientDataException) {
+            statusCode = HttpStatus.BAD_REQUEST;
+            message = "Dados insuficientes para processar a requisição";
+        } else if (genericException instanceof InternalException) {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            message = "Erro interno no servidor MinIO";
+        } else if (genericException instanceof InvalidResponseException) {
+            statusCode = HttpStatus.BAD_GATEWAY;
+            message = "Resposta inválida do serviço de armazenamento";
         } else if (genericException instanceof MinioException) {
             statusCode = HttpStatus.SERVICE_UNAVAILABLE;
             message = "Erro no serviço de armazenamento";
-        }else{
+        } else {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            message = "Erro inesperado ao fazer upload";
+            message = "Erro inesperado ao acessar o MinIO";
         }
 
-        return ResponseEntity.status(statusCode).body(new ErrorFullMessageResponse(message, ex.getFullMessage()));
+        return ResponseEntity.status(statusCode)
+                .body(new ErrorFullMessageResponse(message, ex.getFullMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -80,13 +108,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse("Solicitação inválida: É necessário enviar um arquivo do tipo 'multipart/form-data'."));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorFullMessageResponse> handleGeneralException(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorFullMessageResponse("Erro interno", ex.getMessage()));
     }
     
     @ExceptionHandler(AmqpException.class)

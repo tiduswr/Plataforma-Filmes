@@ -1,11 +1,14 @@
 package com.tiduswr.movies_server.service;
 
+import java.io.InputStream;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tiduswr.movies_server.exceptions.MinioFailException;
 
 import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -63,6 +66,19 @@ public class MinioService {
             throw new MinioFailException("O upload não pôde ser concluído", ex);
         }
         
+    }
+
+    public InputStream getFile(String fileName, String bucketName){
+        try{
+            return minioClient.getObject(
+                GetObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .build()
+            );
+        } catch (Exception ex) {
+            throw new MinioFailException("Erro ao buscar arquivo", ex);
+        }
     }
 
     public void deleteFile(String fileName, String bucketName) {

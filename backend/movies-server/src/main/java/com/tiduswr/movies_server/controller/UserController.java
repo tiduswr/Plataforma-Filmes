@@ -1,11 +1,16 @@
 package com.tiduswr.movies_server.controller;
 
+import java.io.IOException;
 import java.util.Set;
 
+import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tiduswr.movies_server.exceptions.ImageProcessingException;
+import com.tiduswr.movies_server.models.UserImageType;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
 import com.tiduswr.movies_server.models.dto.UpdateRequest;
 import com.tiduswr.movies_server.models.dto.UserResponse;
@@ -30,6 +36,7 @@ public class UserController {
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
         "image/jpeg", "image/png", "image/webp", "image/jpg"
     );
+    private static final long MAX_FILE_SIZE = 50 * 1024 * 1024;
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -63,8 +70,18 @@ public class UserController {
         if(image == null || image.isEmpty())
             throw new ImageProcessingException("Imagem vazia");
         
-        final var contentType = image.getContentType();
-        if(contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)){
+        if(image.getSize() > MAX_FILE_SIZE)
+            throw new ImageProcessingException("A imagem não pode exceder 50mb");
+
+        Tika tika = new Tika();
+        String detectedType;
+        try {
+            detectedType = tika.detect(image.getInputStream());
+        } catch (IOException e) {
+            throw new ImageProcessingException("Imagem corrompida ou formato desconhecido");
+        }
+
+        if(!ALLOWED_CONTENT_TYPES.contains(detectedType)){
             throw new ImageProcessingException("Precisa ser uma imagem no formato jpeg, jpg, png ou webp");
         }
 
@@ -74,4 +91,12 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/profile-image/{userId}/{type}")
+    public ResponseEntity<byte[]> getImage(@PathVariable("userId") String userId, @PathVariable("type") UserImageType type) {
+        byte[] imageBytes = userService.readUserImage(userId, type);
+        
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(imageBytes);
+    }
 }
