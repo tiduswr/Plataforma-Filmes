@@ -14,7 +14,7 @@
 	<artifactId>movies-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>movies-server</name>
-	<description>Demo project for Spring Boot</description>
+	<description>API Central para uma plataforma de videos em Spring Boot</description>
 
 	<properties>
 		<java.version>21</java.version>
