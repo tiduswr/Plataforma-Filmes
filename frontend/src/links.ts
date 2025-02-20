@@ -18,7 +18,7 @@ const HEADER_LINKS : HeaderLink[] = [
 ]
 
 const LOGIN_LINK : HeaderLink = {
-    url : "#",
+    url : "/login",
     title : "Login",
     desc: "Login",
     icon : CiLogin

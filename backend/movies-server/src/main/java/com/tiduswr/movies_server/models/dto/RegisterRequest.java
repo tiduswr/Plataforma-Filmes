@@ -16,7 +16,7 @@ public record RegisterRequest(
     String password,
 
     @NotNull(message = "O campo nome é obrigatório")
-    @Size(min = 5, max = 125, message = "O campo nome precisa ter no mínimo 5 e no máximo 30 caracteres")
+    @Size(min = 5, max = 125, message = "O campo nome precisa ter no mínimo 5 e no máximo 125 caracteres")
     String name
     
 ) {}

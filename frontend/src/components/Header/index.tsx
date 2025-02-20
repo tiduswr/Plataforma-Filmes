@@ -1,9 +1,10 @@
-import LinkButton from "@/components/LinkButton";
+import LinkButton from "@/components/Link";
 import UnderlineHoverButton from "@/components/UnderlineHoverLink";
 import { HEADER_LINKS, HeaderLink, LOGIN_LINK } from "@/links";
 import { useState } from "react";
 import { CiLogin, CiMenuBurger } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,10 +13,10 @@ const Header = () => {
         <header>
             <nav className="bg-white px-4 shadow-2xs border-b border-gray-200">
                 <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl py-2">
-                    <a href="#" className="flex items-center bg-blue-900 px-2 py-0.5 rounded">
+                    <Link to="/" className="flex items-center bg-gray-900 px-2 py-0.5 rounded">
                         <img src="/logo_white.svg" alt="Plataforma de Filmes" className="mr-3 h-6 sm:h-9" />
                         <span className="self-center text-xl font-semibold whitespace-nowrap text-white">PlatFilmes</span>
-                    </a>
+                    </Link>
                     <div className="flex items-center lg:order-2 text-sm">
                         <LinkButton url={LOGIN_LINK.url} className="flex flex-row">
                             Login<CiLogin size={18} />

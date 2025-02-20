@@ -1,19 +1,19 @@
 import clsx from "clsx";
 import { UnderlineHoverLinkProps } from "./types";
 
-const UnderlineHoverLink = ({
+const UnderlineHoverLink : React.FC<UnderlineHoverLinkProps> = ({
   title,
   icon,
   prepEndIcon = false,
   hoverColor = "bg-blue-700",
   desc = "",
-}: UnderlineHoverLinkProps) => {
+}) => {
   return (
     <>
       <a
         href="#"
         className={clsx(
-          "relative flex flex-row gap-1 items-center group p-1 transition duration-300 overflow-hidden justify-center",
+          "relative cursor-pointer flex flex-row gap-1 items-center group p-1 transition duration-300 overflow-hidden justify-center",
           prepEndIcon ? "pr-2" : "pl-2"
         )}
         aria-label={desc}
