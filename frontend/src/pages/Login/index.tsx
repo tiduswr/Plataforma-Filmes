@@ -1,10 +1,13 @@
+import { ApiMessageError, errorDisplay, publicAxiosInstance } from "@/axios/axios"
 import Button from "@/components/Button"
 import FormInput from "@/components/FormInput"
+import useAuthStore from "@/store/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { AxiosError } from "axios"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
-import { LoginForm, loginSchema } from "./types"
+import { LoginForm, LoginResponse, loginSchema } from "./types"
 
 const Login = () => {
 
@@ -17,9 +20,22 @@ const Login = () => {
     resolver: zodResolver(loginSchema)
   })
 
-  const onSubmit = (data: LoginForm) => {
-    console.log(data);
-    toast('Em desenvolvimento...');
+  const { login } = useAuthStore();
+
+  const navigate = useNavigate();
+
+  const onSubmit = async (data: LoginForm) => {
+    
+    try {
+      const response = await publicAxiosInstance.post<LoginResponse>("/login", data);
+      const { accessToken, expiresIn } = response.data;
+      
+      login({ token: accessToken, expiresIn });
+      navigate("/");
+    } catch (error) {
+      errorDisplay(error as AxiosError<ApiMessageError>, (message) => toast.error(message));
+    }
+
   }
 
   return (

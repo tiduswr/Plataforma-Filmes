@@ -1,13 +1,12 @@
 import { HOST } from '@/links';
+import useAuthStore from '@/store/auth';
 import axios, { AxiosError } from 'axios';
 
-const axiosInstance = axios.create({
-  baseURL: HOST,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+type TokenExpiredError = {
+  isCustomError: true;
+  code: "TOKEN_EXPIRED";
+  message: string;
+};
 
 type FieldError = {
   field: string,
@@ -20,32 +19,82 @@ type ApiMessageError = {
   fields?: FieldError[]
 }
 
-const errorDisplay = (
-  { response } : AxiosError<ApiMessageError>, 
-  onError : (message : string) => void,
-  logEnabled : boolean = true
-) : void => {
+const privateAxiosInstance = axios.create({
+  baseURL: HOST,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-  const data = response?.data;
+const publicAxiosInstance = axios.create({
+  baseURL: HOST,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-  if(data && data.fields){
-    const fields = data.fields;
+privateAxiosInstance.interceptors.request.use(
+  (config) => {
+    const { token, expirationDate, logout } = useAuthStore.getState();
 
-    fields.forEach(field => {
-      onError(field.message);
-    });
-  }else if(!data || !data.message){
-    onError(response ? `Erro no servidor: ${response.status} ${response.statusText}` : "Serviço indisponível");
-    if(response && logEnabled) console.error(response);
-  }else{
-    onError(data.message);
-    if(data.full_message && logEnabled){
-      console.error(data.full_message);
+    if (token && expirationDate) {
+      const expiresIn : Date = expirationDate;
+
+      if (new Date() > expiresIn) {
+        logout();
+        console.warn("Token expirado. O usuário foi deslogado.");
+        throw {
+          isCustomError: true,
+          code: "TOKEN_EXPIRED",
+          message: "Sessão expirada. Faça login novamente.",
+        } as TokenExpiredError;
+      }
+
+      config.headers.Authorization = `Bearer ${token.token}`;
     }
-  }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
+const isAxiosError = (error: unknown): error is AxiosError<ApiMessageError> => {
+  return (error as AxiosError)?.isAxiosError ?? false;
 }
 
-export { axiosInstance, errorDisplay };
+const errorDisplay = async (
+  error: unknown, 
+  onError: (message: string) => void, 
+  logEnabled: boolean = true
+) => {
+  
+  if ((error as TokenExpiredError)?.isCustomError && (error as TokenExpiredError)?.code === "TOKEN_EXPIRED") {
+    onError("Sua sessão expirou. Faça login novamente.");
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    window.location.href = "/login"; // useNavigate só funciona dentro de componentes
+    return;
+  }
+
+  if (!isAxiosError(error) || !error.response?.data) {
+    onError((error as Error)?.message || "Ocorreu um erro desconhecido.");
+    return;
+  }
+
+  const { response } = error;
+  const { data, status, statusText } = response;
+  
+  if (data.fields?.length) {
+    data.fields.forEach(field => onError(field.message));
+  } else {
+    onError(data.message || `Erro: ${status} ${statusText}`);
+  }
+
+  if (logEnabled && (data.full_message || response)) {
+    console.error(data.full_message || response);
+  }
+}
+
+export { errorDisplay, privateAxiosInstance, publicAxiosInstance };
 export type { ApiMessageError, FieldError };
 

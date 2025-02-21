@@ -12,6 +12,11 @@ const loginSchema = z
 
 type LoginForm = z.infer<typeof loginSchema>;
 
+type LoginResponse = {
+    accessToken : string,
+    expiresIn : number
+}
+
 export { loginSchema };
-export type { LoginForm };
+export type { LoginForm, LoginResponse };
 

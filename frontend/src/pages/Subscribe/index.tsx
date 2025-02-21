@@ -1,4 +1,4 @@
-import { ApiMessageError, axiosInstance, errorDisplay } from "@/axios/axios"
+import { ApiMessageError, errorDisplay, publicAxiosInstance } from "@/axios/axios"
 import Button from "@/components/Button"
 import FormInput from "@/components/FormInput"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,17 +20,20 @@ const Subscribe = () => {
     resolver: zodResolver(subscribeSchema)
   })
 
-  const onSubmit = (data: SubscribeForm) => {
+  const onSubmit = async (formData: SubscribeForm) => {
     
-    axiosInstance.post<SubscribeResponse>(
-      "/users/basic/register", 
-      data
-    ).then(({ data }) => {
+    try{
+      const response = await publicAxiosInstance.post<SubscribeResponse>(
+        "/users/basic/register", 
+        formData
+      );
+      
+      const { data } = response;
       toast.success(`O usuário ${data.username} foi cadastrado!`);
       reset();
-    }).catch((error : AxiosError<ApiMessageError>) => {
-      errorDisplay(error, (message) => toast.error(message))
-    })
+    }catch(error){
+      errorDisplay(error as AxiosError<ApiMessageError>, (message) => toast.error(message));
+    }
 
   }
 
