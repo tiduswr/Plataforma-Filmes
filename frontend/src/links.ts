@@ -24,6 +24,8 @@ const LOGIN_LINK : HeaderLink = {
     icon : CiLogin
 }
 
-export { HEADER_LINKS, LOGIN_LINK };
+const HOST : string = "http://localhost:8080";
+
+export { HEADER_LINKS, HOST, LOGIN_LINK };
 export type { HeaderLink };
 

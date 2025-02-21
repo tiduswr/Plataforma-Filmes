@@ -1,7 +1,6 @@
 package com.tiduswr.movies_server.exceptions;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.amqp.AmqpException;
@@ -19,6 +18,7 @@ import org.springframework.web.multipart.MultipartException;
 import com.tiduswr.movies_server.models.dto.ErrorFullMessageResponse;
 import com.tiduswr.movies_server.models.dto.ErrorMessageResponse;
 import com.tiduswr.movies_server.models.dto.FieldErrorMessageResponse;
+import com.tiduswr.movies_server.models.dto.FieldErrorMessageResponseTransporter;
 
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<FieldErrorMessageResponse>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<FieldErrorMessageResponseTransporter> handleValidationExceptions(MethodArgumentNotValidException ex) {
 
         var errors = ex.getBindingResult().getAllErrors().stream()
             .map(error -> 
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
             )
             .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new FieldErrorMessageResponseTransporter(errors));
     }
 
     @ExceptionHandler(MultipartException.class)

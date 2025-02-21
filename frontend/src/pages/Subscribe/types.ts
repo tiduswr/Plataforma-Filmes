@@ -29,8 +29,14 @@ const subscribeSchema = z
     }
 )
 
+interface SubscribeResponse {
+    user_id: string;
+    username: string;
+    name: string;
+}
+
 type SubscribeForm = z.infer<typeof subscribeSchema>;
 
 export { subscribeSchema };
-export type { SubscribeForm };
+export type { SubscribeForm, SubscribeResponse };
 

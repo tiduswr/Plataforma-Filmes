@@ -1,10 +1,12 @@
+import { ApiMessageError, axiosInstance, errorDisplay } from "@/axios/axios"
 import Button from "@/components/Button"
 import FormInput from "@/components/FormInput"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { AxiosError } from "axios"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
-import { SubscribeForm, subscribeSchema } from "./types"
+import { SubscribeForm, SubscribeResponse, subscribeSchema } from "./types"
 
 const Subscribe = () => {
 
@@ -12,14 +14,24 @@ const Subscribe = () => {
     register,
     handleSubmit,
     formState: { errors },
-    clearErrors
+    clearErrors,
+    reset
   } = useForm<SubscribeForm>({
     resolver: zodResolver(subscribeSchema)
   })
 
   const onSubmit = (data: SubscribeForm) => {
-    console.log(data);
-    toast('Em desenvolvimento...');
+    
+    axiosInstance.post<SubscribeResponse>(
+      "/users/basic/register", 
+      data
+    ).then(({ data }) => {
+      toast.success(`O usuário ${data.username} foi cadastrado!`);
+      reset();
+    }).catch((error : AxiosError<ApiMessageError>) => {
+      errorDisplay(error, (message) => toast.error(message))
+    })
+
   }
 
   return (
