@@ -1,13 +1,14 @@
-import { ApiMessageError, errorDisplay, publicAxiosInstance } from "@/axios/axios"
+import { ApiMessageError, errorDisplay, privateAxiosInstance, publicAxiosInstance } from "@/axios/axios"
 import Button from "@/components/Button"
 import FormInput from "@/components/FormInput"
 import useAuthStore from "@/store/auth"
+import useUserStore from "@/store/user"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AxiosError } from "axios"
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
-import { LoginForm, LoginResponse, loginSchema } from "./types"
+import { LoginForm, LoginResponse, loginSchema, UserResponse } from "./types"
 
 const Login = () => {
 
@@ -20,20 +21,28 @@ const Login = () => {
     resolver: zodResolver(loginSchema)
   })
 
-  const { login } = useAuthStore();
+  const { setAuthCredentials, removeAuthCredentials } = useAuthStore();
+
+  const { setUserData, deleteUserData } = useUserStore();
 
   const navigate = useNavigate();
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (form: LoginForm) => {
     
     try {
-      const response = await publicAxiosInstance.post<LoginResponse>("/login", data);
-      const { accessToken, expiresIn } = response.data;
-      
-      login({ token: accessToken, expiresIn });
+      const tokenResponse = await publicAxiosInstance.post<LoginResponse>("/login", form);
+      const { accessToken, expiresIn } = tokenResponse.data;
+      setAuthCredentials({ token: accessToken, expiresIn });
+
+      const userDataResponse = await privateAxiosInstance.get<UserResponse>("/users/me");
+      const { data : userData } = userDataResponse;
+      setUserData(userData);
+
       navigate("/");
     } catch (error) {
       errorDisplay(error as AxiosError<ApiMessageError>, (message) => toast.error(message));
+      removeAuthCredentials();
+      deleteUserData();
     }
 
   }

@@ -1,13 +1,18 @@
 import LinkButton from "@/components/Link";
 import UnderlineHoverButton from "@/components/UnderlineHoverLink";
 import { HEADER_LINKS, HeaderLink, LOGIN_LINK } from "@/links";
+import useAuthStore from "@/store/auth";
+import useUserStore from "@/store/user";
 import { useState } from "react";
 import { CiLogin, CiMenuBurger } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { Link } from "react-router-dom";
+import LoginAvatar from "../LoginAvatar";
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { logged } = useAuthStore();
+    const { user } = useUserStore();
 
     return (
         <header>
@@ -18,9 +23,15 @@ const Header = () => {
                         <span className="self-center text-xl font-semibold whitespace-nowrap text-white">PlatFilmes</span>
                     </Link>
                     <div className="flex items-center lg:order-2 text-sm">
-                        <LinkButton url={LOGIN_LINK.url} className="flex flex-row">
-                            Login<CiLogin size={18} />
-                        </LinkButton>
+                        
+                        {logged && user ? (
+                            <LoginAvatar />
+                        ) : (
+                            <LinkButton url={LOGIN_LINK.url} className="flex flex-row">
+                                Login<CiLogin size={18} />
+                            </LinkButton>
+                        )}
+                        
                         <button 
                             type="button"
                             className="ml-3 inline-flex items-center p-2 text-sm text-gray-500 rounded-lg lg:hidden active:text-blue-700 font-bold"

@@ -62,6 +62,14 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/me")    
+    public ResponseEntity<UserResponse> getMe(@AuthenticationPrincipal Jwt jwt){
+        String userId = jwt.getSubject();
+        UserResponse user = userService.getPrivateUserData(userId);
+
+        return ResponseEntity.ok().body(user);
+    }
+
     @PutMapping("/profile-image")
     public ResponseEntity<Void> publishImageTask(
         @RequestParam("file") MultipartFile image, 

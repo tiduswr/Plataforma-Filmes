@@ -4,7 +4,7 @@ import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Importação do CSS obrigatório
+import "react-toastify/dist/ReactToastify.css";
 import Subscribe from "./pages/Subscribe";
 
 const App: React.FC = () => {
@@ -16,13 +16,21 @@ const App: React.FC = () => {
             />
 
             <Routes>
+                {/* Rotas públicas */}
                 <Route element={<DefaultLayout />}>
                     <Route path="/" element={<Home />} />
                 </Route>
-
                 <Route path="/login" element={<Login />} />
                 <Route path="/subscribe" element={<Subscribe />} />
 
+                {/* Rotas privadas 
+                <Route element={<PrivateRoute />}>
+                    <Route element={<DefaultLayout />}>
+                        <Route path="/?????????" element={<????????? />} />
+                    </Route>
+                </Route>*/}
+
+                {/* Rota 404 */}
                 <Route element={<DefaultLayout />}>
                     <Route path="*" element={<NotFound />} />
                 </Route>

@@ -10,25 +10,25 @@ type Auth = {
     token: Token | null;
     logged: boolean;
     expirationDate: Date | null;
-    login: (auth: Token) => void;
-    logout: () => void;
+    setAuthCredentials: (auth: Token) => void;
+    removeAuthCredentials: () => void;
     isTokenExpired: () => boolean;
 };
 
 const useAuthStore = create<Auth>()(
-    persist(
+    persist<Auth>(
         (set, get) => ({
             token: null,
             logged: false,
             expirationDate: null,
 
-            login: (auth) => {
+            setAuthCredentials: (auth) => {
                 const expirationDate = new Date();
                 expirationDate.setSeconds(expirationDate.getSeconds() + auth.expiresIn);
                 set({ token: { ...auth  }, logged: true, expirationDate });
             },
 
-            logout: () => set({ token: null, logged: false }),
+            removeAuthCredentials: () => set({ token: null, logged: false }),
 
             isTokenExpired: () : boolean => {
                 const { expirationDate } = get();

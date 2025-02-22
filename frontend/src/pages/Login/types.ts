@@ -13,10 +13,16 @@ const loginSchema = z
 type LoginForm = z.infer<typeof loginSchema>;
 
 type LoginResponse = {
-    accessToken : string,
-    expiresIn : number
+    accessToken : string;
+    expiresIn : number;
+}
+
+type UserResponse = {
+    user_id : string;
+    username : string;
+    name : string;
 }
 
 export { loginSchema };
-export type { LoginForm, LoginResponse };
+export type { LoginForm, LoginResponse, UserResponse };
 

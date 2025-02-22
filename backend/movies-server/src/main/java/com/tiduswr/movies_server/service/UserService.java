@@ -148,6 +148,14 @@ public class UserService {
         }catch (Exception ex){
             throw new InternalServerError("Erro ao converter imagem no Servidor");
         }
+    }    
+
+    public UserResponse getPrivateUserData(String userId) {
+        var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
+            () -> new NotFoundException("Usuário não encontrado")
+        );
+
+        return UserResponse.from(user);
     }
 
     private void deleteMinioFile(String fileName, String bucketName){
