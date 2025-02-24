@@ -5,7 +5,9 @@ import NotFound from "@/pages/NotFound";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PrivateRoute from "./components/PrivateRoute";
 import Subscribe from "./pages/Subscribe";
+import UserDataEdit from "./pages/UserDataEdit";
 
 const App: React.FC = () => {
     return (
@@ -23,12 +25,12 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/subscribe" element={<Subscribe />} />
 
-                {/* Rotas privadas 
+                {/* Rotas privadas */}
                 <Route element={<PrivateRoute />}>
                     <Route element={<DefaultLayout />}>
-                        <Route path="/?????????" element={<????????? />} />
+                        <Route path="/edit/user-data" element={<UserDataEdit />} />
                     </Route>
-                </Route>*/}
+                </Route>
 
                 {/* Rota 404 */}
                 <Route element={<DefaultLayout />}>

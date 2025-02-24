@@ -15,7 +15,7 @@ const Header = () => {
     const { user } = useUserStore();
 
     return (
-        <header>
+        <header className="absolute w-full z-50">
             <nav className="bg-white px-4 shadow-2xs border-b border-gray-200">
                 <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl py-2">
                     <Link to="/" className="flex items-center bg-gray-900 px-2 py-0.5 rounded">
