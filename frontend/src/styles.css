@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+@keyframes jump {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .animate-jump {
+    animation: jump 1s ease-in-out infinite;
+  }
+  
+  .animate-jump-400 {
+    animation: jump 1s ease-in-out infinite 0.4s;
+  }
+  
+  .animate-jump-800 {
+    animation: jump 1s ease-in-out infinite 0.8s;
+  }

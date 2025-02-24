@@ -37,6 +37,6 @@ interface SubscribeResponse {
 
 type SubscribeForm = z.infer<typeof subscribeSchema>;
 
-export { subscribeSchema };
+export { passwordSchema, subscribeSchema };
 export type { SubscribeForm, SubscribeResponse };
 

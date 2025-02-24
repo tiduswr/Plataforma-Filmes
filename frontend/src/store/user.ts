@@ -31,4 +31,5 @@ const useUserStore = create<UserData>()(
 )
 
 export default useUserStore;
-export type { UserData };
+export type { User, UserData };
+

@@ -1,6 +1,10 @@
+import { ButtonHTMLAttributes } from "react";
+
 type ButtonProps = {
     type?: "button" | "submit" | "reset",
-    text: string
+    text: string,
+    className?: string,
+    btProps?: ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 export type { ButtonProps };

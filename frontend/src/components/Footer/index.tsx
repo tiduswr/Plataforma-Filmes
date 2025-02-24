@@ -12,7 +12,6 @@ const Footer : React.FC<FooterProps> = ( { mainRef : { current : mainObject } } 
     const checkHeight = () => {
       if (!mainObject) return;
       const totalHeight = mainObject.offsetHeight + mainObject.offsetTop;
-      console.log(`totalHeight: ${totalHeight}, windowHeight: ${window.innerHeight}`)
       setIsPageShort(totalHeight <= window.innerHeight);
     };
 
