@@ -49,6 +49,8 @@ public class VideoMetadata {
 
     private Integer progressPercentage;
 
+    private Integer likeCount;
+
     private String progressInformation;
 
     @ManyToOne

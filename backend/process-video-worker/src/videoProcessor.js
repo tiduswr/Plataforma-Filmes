@@ -2,7 +2,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
 import minioClient, { createBucketIfNotExists, deleteFromMinio, downloadFromMinio, uploadHLS, uploadToMinio } from './minioClient.js';
-import { updateMovieStatus } from './videoRepository.js';
+import { updateMovieStatus, updateProgress } from './videoRepository.js';
 
 const TEMP_FOLDER = '/temp';
 const VIDEO_BUCKET = process.env.MINIO_VIDEOS_BUCKET;
@@ -38,18 +38,22 @@ const processVideo = async (task) => {
 
         const endpoint = VIDEOS_GET_ENDPOINT ? `${VIDEOS_GET_ENDPOINT}/${video_id}/` : "";
         console.log(`🎥 Convertendo ${video_id} para HLS...`);
-        await processResolutions(videoFilePath, videoFolder, validResolutions, endpoint);
+        await updateProgress(video_id, "Convertendo video para HLS...", 10);
+        await processResolutions(videoFilePath, videoFolder, validResolutions, endpoint, video_id);
 
         console.log(`🎥 Gerando playlist master...`);
+        await updateProgress(video_id, "Gerando playlist master...", 10);
         createMasterPlaylist(videoFolder, validResolutions, endpoint);
 
         console.log(`📤 Enviando vídeos HLS para MinIO...`);
+        await updateProgress(video_id, "Enviando para o serviço de armazenamento...", 35);
         await uploadHLS(videoFolder, VIDEO_BUCKET, video_id);
 
         console.log(`🗑️ Deletando arquivo temporário do MinIO...`);
         await deleteFromMinio(TEMP_BUCKET, file_name);
 
         console.log(`🔄 Atualizando status no banco de dados...`);
+        await updateProgress(video_id, "Concluido.", 5);
         await updateMovieStatus("OK", String(video_id));
     } catch (error) {
         console.error('❌ Erro ao processar o vídeo:', error);
@@ -137,7 +141,7 @@ const getValidResolutions = async (inputFile) => {
 
 async function convertToHLS(inputPath, outputDir, resolution, baseUrl = "") {
     return new Promise((resolve, reject) => {
-        const { name, size, bitrate } = resolution;
+        const { name, size, bitrate } = resolution;       
 
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir, { recursive: true });
@@ -173,13 +177,19 @@ async function convertToHLS(inputPath, outputDir, resolution, baseUrl = "") {
     });
 }
 
-async function processResolutions(inputPath, outputDir, resolutions, baseUrl) {
+async function processResolutions(inputPath, outputDir, resolutions, baseUrl, videoId) {
+    const progressStep = 40 / resolutions.length;
+
+    let count = 0;
     for (const resolution of resolutions) {
-        try {
-            await convertToHLS(inputPath, outputDir, resolution, baseUrl);
-        } catch (error) {
-            console.error(`Falha ao processar resolução ${resolution.name}:`, error);
-        }
+        const progressText = `Convertendo video para ${resolution.name}...`;
+        count += progressStep;
+        await updateProgress(videoId, progressText, progressStep);
+        await convertToHLS(inputPath, outputDir, resolution, baseUrl);
+    }
+
+    if(count != 40){
+        await updateProgress(videoId, progressText, 40);
     }
 }
 

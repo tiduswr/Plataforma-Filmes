@@ -3,6 +3,10 @@ import { Buffer } from "buffer";
 
 const prisma = new PrismaClient();
 
+const stringIdToBufferHex = (videoId) => {
+    return Buffer.from(videoId.replace(/-/g, ""), "hex");
+}
+
 const updateMovieStatus = async (statusName, videoId) => {
     return await prisma.$transaction(async (tx) => {
         const status = await tx.tb_status.findFirst({
@@ -13,7 +17,7 @@ const updateMovieStatus = async (statusName, videoId) => {
             throw new Error(`Status não encontrado pelo atributo 'name(${statusName})' na tabela 'tb_status'.`);
         }
 
-        const videoIdBuffer = Buffer.from(videoId.replace(/-/g, ""), "hex");
+        const videoIdBuffer = stringIdToBufferHex(videoId);
 
         const movie = await tx.tb_videos.findFirst({
             where: { video_id: videoIdBuffer }
@@ -30,4 +34,36 @@ const updateMovieStatus = async (statusName, videoId) => {
     });
 }
 
-export { updateMovieStatus };
+const updateProgress = async (videoId, progressText, progressSumAmount) => {
+    return await prisma.$transaction(async (tx) => {
+        const videoIdBuffer = stringIdToBufferHex(videoId);
+
+        const video = await tx.tb_videos.findFirst({
+            where: {
+                video_id: videoIdBuffer
+            }
+        });
+
+        if (!video) {
+            throw new Error("Vídeo não encontrado.");
+        }
+
+        const newAmount = video.progress_percentage + progressSumAmount;
+
+        if(newAmount > 100){
+            throw new Error("A porcentagem não pode ser maior que 100 ao ser salva na tb_videos");
+        }
+
+        return await tx.tb_videos.update({
+            where: {
+                video_id: videoIdBuffer
+            },
+            data: {
+                progress_percentage: newAmount,
+                progress_information: progressText
+            }
+        });
+    })
+}
+
+export { updateMovieStatus, updateProgress };

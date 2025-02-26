@@ -29,6 +29,8 @@ const connectToRabbitMQ = async () => {
                     console.error('Erro ao processar a tarefa:', error);
                     channel.nack(msg, false, true);
                 }
+                
+                console.log('\nAguardando tarefas...');
             }
         })
 

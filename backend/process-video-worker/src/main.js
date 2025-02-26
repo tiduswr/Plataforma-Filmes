@@ -19,16 +19,17 @@ const connectToRabbitMQ = async () => {
         channel.consume(AMQP_CONFIG.QUEUE_NAME, async (msg) => {
             if(msg != null){                
                 const task = JSON.parse(JSON.parse(msg.content));
-                console.log(`\nProcessando tarefa: ${task.userId}, arquivo: ${task.fileName}`);
+                console.log(`\nProcessando video: ${task.file_name}`);
 
                 try {
-                    // { video_id: "b64cacf6-5a45-4cd7-a379-7ac479c7d036", file_name: "b64cacf6-5a45-4cd7-a379-7ac479c7d036.mp4" }
                     await processVideo(task);
                     channel.ack(msg);
                 } catch (error) {
                     console.error('Erro ao processar a tarefa:', error);
                     channel.nack(msg, false, true);
                 }
+
+                console.log('\nAguardando tarefas...');
             }
         })
 

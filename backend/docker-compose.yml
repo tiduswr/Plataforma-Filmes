@@ -65,9 +65,39 @@ services:
       - minio
       - rabbitmq
     restart: always
+  
+  video-worker:
+    build:
+      context: ./process-video-worker
+      dockerfile: Dockerfile
+    container_name: video_worker
+    ports:
+      - "${VIDEO_WORKER_PORT}:3000"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_PROCESS_VIDEO_BUCKET: ${MINIO_PROCESS_VIDEO_BUCKET}
+      MINIO_VIDEOS_BUCKET: ${MINIO_VIDEOS_BUCKET}
+      MINIO_USE_SSL: ${MINIO_USE_SSL}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      VIDEOS_GET_ENDPOINT: ${VIDEOS_GET_ENDPOINT}
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./data/video-worker:/usr/src/app
+    depends_on:
+      - mysql
+      - minio
+      - rabbitmq
+    restart: always
 
 volumes:
   mysql-data:
   minio-data:
   rabbitmq-data:
   image-worker-data:
+  video-worker-data:
