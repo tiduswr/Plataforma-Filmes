@@ -9,11 +9,14 @@ import com.tiduswr.movies_server.exceptions.MinioFailException;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
+import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.Result;
 import io.minio.StatObjectArgs;
+import io.minio.messages.Item;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -105,6 +108,30 @@ public class MinioService {
             );
         } catch (Exception ex) {
             throw new MinioFailException("Erro ao deletar o arquivo", ex);
+        }
+    }
+
+    public void deleteFolder(String folderName, String bucketName) {
+        try {
+            var results = minioClient.listObjects(
+                ListObjectsArgs.builder()
+                    .bucket(bucketName)
+                    .prefix(folderName + "/")
+                    .recursive(true)
+                    .build()
+            );
+
+            for (Result<Item> result : results) {
+                String objectName = result.get().objectName();
+                minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(objectName)
+                        .build()
+                );
+            }
+        } catch (Exception ex) {
+            throw new MinioFailException("Erro ao deletar a pasta e seus arquivos", ex);
         }
     }
 

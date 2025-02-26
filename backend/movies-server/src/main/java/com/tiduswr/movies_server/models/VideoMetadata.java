@@ -49,9 +49,14 @@ public class VideoMetadata {
 
     private Integer progressPercentage;
 
-    private Integer likeCount;
-
     private String progressInformation;
+
+    private Long likeCount;
+
+    private Long views;
+
+    @Column(nullable = false)
+    private Boolean visible;    
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)

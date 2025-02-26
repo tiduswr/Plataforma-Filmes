@@ -2,7 +2,7 @@ package com.tiduswr.movies_server.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum UserImageType {
+public enum ImageType {
     BIG, SMALL;
 
     @JsonValue

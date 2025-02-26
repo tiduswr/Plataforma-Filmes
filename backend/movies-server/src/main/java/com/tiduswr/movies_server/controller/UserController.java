@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tiduswr.movies_server.exceptions.ImageProcessingException;
-import com.tiduswr.movies_server.models.UserImageType;
+import com.tiduswr.movies_server.models.ImageType;
 import com.tiduswr.movies_server.models.dto.PrivateUserResponse;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
 import com.tiduswr.movies_server.models.dto.UpdateRequest;
@@ -100,7 +100,7 @@ public class UserController {
     }
 
     @GetMapping("/profile-image/{userId}/{type}")
-    public ResponseEntity<byte[]> getImage(@PathVariable("userId") String userId, @PathVariable("type") UserImageType type) {
+    public ResponseEntity<byte[]> getImage(@PathVariable("userId") String userId, @PathVariable("type") ImageType type) {
         byte[] imageBytes = userService.readUserImage(userId, type);
         
         return ResponseEntity.ok()

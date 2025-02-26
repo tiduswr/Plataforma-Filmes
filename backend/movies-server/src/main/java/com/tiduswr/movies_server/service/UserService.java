@@ -17,9 +17,9 @@ import com.tiduswr.movies_server.exceptions.ImageProcessingException;
 import com.tiduswr.movies_server.exceptions.InternalServerError;
 import com.tiduswr.movies_server.exceptions.JsonProcessingFailException;
 import com.tiduswr.movies_server.exceptions.NotFoundException;
+import com.tiduswr.movies_server.models.ImageType;
 import com.tiduswr.movies_server.models.Role;
 import com.tiduswr.movies_server.models.User;
-import com.tiduswr.movies_server.models.UserImageType;
 import com.tiduswr.movies_server.models.dto.ImageTask;
 import com.tiduswr.movies_server.models.dto.PrivateUserResponse;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
@@ -88,7 +88,7 @@ public class UserService {
 
         var updatedUser = userRepository.save(user);
 
-        return PrivateUserResponse.from(updatedUser, userImageExists(userId, UserImageType.SMALL));
+        return PrivateUserResponse.from(updatedUser, userImageExists(userId, ImageType.SMALL));
     }
 
     public void publishUserImageTask(String userId, MultipartFile file){
@@ -122,7 +122,7 @@ public class UserService {
         }
     }
 
-    private String mountUserImageFileName(String userId, UserImageType type){
+    private String mountUserImageFileName(String userId, ImageType type){
         String typeConcat;
         switch (type) {
             case BIG:
@@ -138,7 +138,7 @@ public class UserService {
         return userId + typeConcat + ".png";
     }
 
-    public byte[] readUserImage(String userId, UserImageType type){
+    public byte[] readUserImage(String userId, ImageType type){
         var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
             () -> new NotFoundException("Usuário não encontrado")
         );
@@ -153,7 +153,7 @@ public class UserService {
         }
     }    
 
-    public boolean userImageExists(String userId, UserImageType type){
+    public boolean userImageExists(String userId, ImageType type){
         var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
             () -> new NotFoundException("Usuário não encontrado")
         );
@@ -172,7 +172,7 @@ public class UserService {
             () -> new NotFoundException("Usuário não encontrado")
         );
 
-        return PrivateUserResponse.from(user, userImageExists(userId, UserImageType.SMALL));
+        return PrivateUserResponse.from(user, userImageExists(userId, ImageType.SMALL));
     }
 
     private void deleteMinioFile(String fileName, String bucketName){

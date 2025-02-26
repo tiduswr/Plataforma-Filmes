@@ -66,10 +66,12 @@ model tb_videos {
   video_id             Bytes            @id @db.Binary(16)
   description          String?          @db.Text
   duration             String           @db.VarChar(255)
-  like_count           Int?
+  like_count           BigInt?
   progress_information String?          @db.VarChar(255)
   progress_percentage  Int?
   title                String           @db.VarChar(255)
+  views                BigInt?
+  visible              Boolean          @db.Bit(1)
   user_id              Bytes            @db.Binary(16)
   status_id            BigInt
   tb_comments          tb_comments[]

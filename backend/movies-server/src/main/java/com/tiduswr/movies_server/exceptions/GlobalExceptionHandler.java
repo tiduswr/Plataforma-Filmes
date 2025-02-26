@@ -138,4 +138,18 @@ public class GlobalExceptionHandler {
                 .body(new ErrorFullMessageResponse("Erro no processamento do vídeo", ex.getMessage()));
     }
 
+    @ExceptionHandler(ResourceNotAllowedException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleResourceNotAllowedException(ResourceNotAllowedException ex){
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorFullMessageResponse("Erro no acesso ao recurso", ex.getMessage()));
+    }
+
+    @ExceptionHandler(VideoNotReadyException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleVideoNotReadyException(VideoNotReadyException ex){
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorFullMessageResponse("Erro ao recuperar video", ex.getMessage()));
+    }
+
 }
