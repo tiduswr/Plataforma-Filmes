@@ -41,6 +41,8 @@ const processVideo = async (task) => {
         await updateProgress(video_id, "Convertendo video para HLS...", 10);
         await processResolutions(videoFilePath, videoFolder, validResolutions, endpoint, video_id);
 
+        await captureThumbnails(videoFilePath, videoFolder);
+
         console.log(`🎥 Gerando playlist master...`);
         await updateProgress(video_id, "Gerando playlist master...", 10);
         createMasterPlaylist(videoFolder, validResolutions, endpoint);
@@ -211,6 +213,44 @@ const deleteFolder = async (bucketName, folderName) => {
     } catch (error) {
         console.error("Erro ao deletar pasta:", error);
     }
+};
+
+const captureThumbnails = (videoFilePath, outputFolder) => {
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(videoFilePath, (err, metadata) => {
+            if (err) return reject(err);
+
+            const duration = metadata.format.duration;
+            const midpoint = duration / 2;
+
+            const resolutions = [
+                { size: '1920x1080', filename: 'thumbnail_big.png' },
+                { size: '854x480', filename: 'thumbnail_small.png' },
+            ];
+
+            let count = 0;
+            resolutions.forEach(({ size, filename }) => {
+                ffmpeg(videoFilePath)
+                    .screenshots({
+                        timestamps: [midpoint],
+                        filename: filename,
+                        folder: outputFolder,
+                        size: size,
+                    })
+                    .on('end', () => {
+                        count++;
+                        if (count === resolutions.length) {
+                            console.log(`✅ Capa gerada em ${outputFolder}`);
+                            resolve(outputFolder);
+                        }
+                    })
+                    .on('error', (err) => {
+                        console.error(`Erro ao gerar a capa (${size}): ${err.message}`);
+                        reject(err);
+                    });
+            });
+        });
+    });
 };
 
 const removeFolder = (folderPath) => {

@@ -52,7 +52,7 @@ const uploadHLS = async (folder, bucket, videoId) => {
     const filePath = path.join(folder, file);
     const extname = path.extname(file).toLowerCase();
 
-    if (extname === ".ts" || extname === ".m3u8") {
+    if (extname === ".ts" || extname === ".m3u8" || extname === ".png") {
       const objectName = `${videoId}/${file}`;
       await uploadToMinio(bucket, objectName, filePath, false);
     }
