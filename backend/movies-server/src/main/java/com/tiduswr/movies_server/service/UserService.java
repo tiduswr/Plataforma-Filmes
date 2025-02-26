@@ -21,9 +21,9 @@ import com.tiduswr.movies_server.models.Role;
 import com.tiduswr.movies_server.models.User;
 import com.tiduswr.movies_server.models.UserImageType;
 import com.tiduswr.movies_server.models.dto.ImageTask;
+import com.tiduswr.movies_server.models.dto.PrivateUserResponse;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
 import com.tiduswr.movies_server.models.dto.UpdateRequest;
-import com.tiduswr.movies_server.models.dto.UserResponse;
 import com.tiduswr.movies_server.repository.RoleRepository;
 import com.tiduswr.movies_server.repository.UserRepository;
 
@@ -40,7 +40,7 @@ public class UserService {
     private final MinioService minioService;
 
     @Transactional
-    public UserResponse basicUserRegister(RegisterRequest request){
+    public PrivateUserResponse basicUserRegister(RegisterRequest request){
 
         var roleBasic = roleRepository.findByName(Role.Values.USER.name()).orElseThrow(
             () -> new InternalServerError("Role USER não encontrada!")
@@ -63,11 +63,11 @@ public class UserService {
         
         var savedUser = userRepository.save(newUser);
 
-        return UserResponse.from(savedUser);
+        return PrivateUserResponse.from(savedUser, false);
     }
 
     @Transactional
-    public UserResponse basicUserUpdate(UpdateRequest request, String userId){
+    public PrivateUserResponse basicUserUpdate(UpdateRequest request, String userId){
         
         var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
             () -> new NotFoundException("O usuário não foi encontrado")
@@ -88,8 +88,7 @@ public class UserService {
 
         var updatedUser = userRepository.save(user);
 
-        return UserResponse.from(updatedUser);
-
+        return PrivateUserResponse.from(updatedUser, userImageExists(userId, UserImageType.SMALL));
     }
 
     public void publishUserImageTask(String userId, MultipartFile file){
@@ -123,11 +122,7 @@ public class UserService {
         }
     }
 
-    public byte[] readUserImage(String userId, UserImageType type){
-        var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
-            () -> new NotFoundException("Usuário não encontrado")
-        );
-
+    private String mountUserImageFileName(String userId, UserImageType type){
         String typeConcat;
         switch (type) {
             case BIG:
@@ -140,8 +135,16 @@ public class UserService {
                 throw new ImageProcessingException("Tipo de imagem não reconhecido");
         }
 
-        String filename = user.getUserId().toString() + typeConcat + ".png";
-        var fileIs = minioService.getFile(filename, MinioBuckets.USER_IMAGE.getBucketName());
+        return userId + typeConcat + ".png";
+    }
+
+    public byte[] readUserImage(String userId, UserImageType type){
+        var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
+            () -> new NotFoundException("Usuário não encontrado")
+        );
+
+        var fileName = mountUserImageFileName(user.getUserId().toString(), type);
+        var fileIs = minioService.getFile(fileName, MinioBuckets.USER_IMAGE.getBucketName());
         
         try{
             return fileIs.readAllBytes();
@@ -150,12 +153,26 @@ public class UserService {
         }
     }    
 
-    public UserResponse getPrivateUserData(String userId) {
+    public boolean userImageExists(String userId, UserImageType type){
         var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
             () -> new NotFoundException("Usuário não encontrado")
         );
 
-        return UserResponse.from(user);
+        var fileName = mountUserImageFileName(user.getUserId().toString(), type);        
+        
+        try{
+            return minioService.exists(fileName, MinioBuckets.USER_IMAGE.getBucketName());
+        }catch (Exception ex){
+            return false;
+        }
+    }    
+
+    public PrivateUserResponse getPrivateUserData(String userId) {
+        var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
+            () -> new NotFoundException("Usuário não encontrado")
+        );
+
+        return PrivateUserResponse.from(user, userImageExists(userId, UserImageType.SMALL));
     }
 
     private void deleteMinioFile(String fileName, String bucketName){

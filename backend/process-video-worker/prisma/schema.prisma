@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tb_roles {
+  role_id        BigInt           @id @default(autoincrement())
+  name           String?          @db.VarChar(255)
+  tb_users_roles tb_users_roles[]
+}
+
+model tb_status {
+  status_id BigInt      @id @default(autoincrement())
+  name      String?     @db.VarChar(255)
+  tb_videos tb_videos[]
+}
+
+model tb_users {
+  user_id        Bytes            @id @db.Binary(16)
+  username       String           @unique(map: "UK8n82lwp7lflhwda2v2v3wckc9") @db.VarChar(30)
+  name           String           @db.VarChar(125)
+  password       String           @db.VarChar(255)
+  tb_users_roles tb_users_roles[]
+}
+
+model tb_users_roles {
+  role_id  BigInt
+  user_id  Bytes    @db.Binary(16)
+  tb_users tb_users @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK5xc4yvfrjcy8bl01kq3crp8pg")
+  tb_roles tb_roles @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "FKj5qged12p22eloqw5g4f9hm2e")
+
+  @@id([role_id, user_id])
+  @@index([user_id], map: "FK5xc4yvfrjcy8bl01kq3crp8pg")
+}
+
+model tb_videos {
+  status_id   BigInt?
+  video_id    Bytes      @id @db.Binary(16)
+  description String?    @db.Text
+  title       String?    @db.VarChar(255)
+  duration    String?    @db.VarChar(255)
+  tb_status   tb_status? @relation(fields: [status_id], references: [status_id], onDelete: NoAction, onUpdate: NoAction, map: "FK835iyxcjavpmmpym48re4ew1l")
+
+  @@index([status_id], map: "FK835iyxcjavpmmpym48re4ew1l")
+}

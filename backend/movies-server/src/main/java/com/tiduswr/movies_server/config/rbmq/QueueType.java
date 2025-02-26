@@ -2,7 +2,8 @@ package com.tiduswr.movies_server.config.rbmq;
 
 public enum QueueType {
     
-    IMAGEM_QUEUE("user-image-proc");
+    IMAGEM_QUEUE("user-image-proc"),
+    VIDEO_QUEUE("video-proc");
 
     private final String taskName;
 

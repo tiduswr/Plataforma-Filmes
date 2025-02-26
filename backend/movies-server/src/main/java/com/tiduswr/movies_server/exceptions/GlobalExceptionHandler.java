@@ -125,10 +125,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ImageProcessingException.class)
-    public ResponseEntity<ErrorFullMessageResponse> handleJsonProcessingFail(ImageProcessingException ex){
+    public ResponseEntity<ErrorFullMessageResponse> handleImageProcessingException(ImageProcessingException ex){
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorFullMessageResponse("Erro no processamento da imagem", ex.getMessage()));
+    }
+
+    @ExceptionHandler(VideoProcessingException.class)
+    public ResponseEntity<ErrorFullMessageResponse> handleVideoProcessingException(VideoProcessingException ex){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorFullMessageResponse("Erro no processamento do vídeo", ex.getMessage()));
     }
 
 }

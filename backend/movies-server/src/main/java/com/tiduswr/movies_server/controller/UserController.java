@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tiduswr.movies_server.exceptions.ImageProcessingException;
 import com.tiduswr.movies_server.models.UserImageType;
+import com.tiduswr.movies_server.models.dto.PrivateUserResponse;
 import com.tiduswr.movies_server.models.dto.RegisterRequest;
 import com.tiduswr.movies_server.models.dto.UpdateRequest;
-import com.tiduswr.movies_server.models.dto.UserResponse;
 import com.tiduswr.movies_server.service.UserService;
 
 import jakarta.validation.Valid;
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/basic/register")    
-    public ResponseEntity<UserResponse> newUser(@Valid @RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<PrivateUserResponse> newUser(@Valid @RequestBody RegisterRequest registerRequest){
 
         var response = userService.basicUserRegister(registerRequest);
 
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<UserResponse> updateUser(
+    public ResponseEntity<PrivateUserResponse> updateUser(
         @Valid @RequestBody UpdateRequest updateRequest,
         @AuthenticationPrincipal Jwt jwt
     ){
@@ -63,9 +63,9 @@ public class UserController {
     }
 
     @GetMapping("/me")    
-    public ResponseEntity<UserResponse> getMe(@AuthenticationPrincipal Jwt jwt){
+    public ResponseEntity<PrivateUserResponse> getMe(@AuthenticationPrincipal Jwt jwt){
         String userId = jwt.getSubject();
-        UserResponse user = userService.getPrivateUserData(userId);
+        PrivateUserResponse user = userService.getPrivateUserData(userId);
 
         return ResponseEntity.ok().body(user);
     }

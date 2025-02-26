@@ -13,6 +13,7 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.StatObjectArgs;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -76,6 +77,19 @@ public class MinioService {
                     .object(fileName)
                     .build()
             );
+        } catch (Exception ex) {
+            throw new MinioFailException("Erro ao buscar arquivo", ex);
+        }
+    }
+
+    public boolean exists(String fileName, String bucketName){
+        try{
+            return minioClient.statObject(
+                StatObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .build()
+            ) != null;
         } catch (Exception ex) {
             throw new MinioFailException("Erro ao buscar arquivo", ex);
         }
