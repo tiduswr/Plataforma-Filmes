@@ -2,6 +2,8 @@ package com.tiduswr.movies_server.models;
 
 import java.util.UUID;
 
+import com.tiduswr.movies_server.models.dto.CommentRequest;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,5 +43,13 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "video_id", referencedColumnName = "video_id")
     private VideoMetadata video;
+
+    public static Comment from(CommentRequest request, VideoMetadata video, User user){
+        return Comment.builder()
+            .content(request.content())
+            .user(user)
+            .video(video)
+            .build();
+    }
 }
 

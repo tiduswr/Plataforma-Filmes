@@ -82,4 +82,22 @@ public class VideoMetadata {
         this.likes.clear();
     }
 
+    public void putComment(Comment comment){
+        comments.add(comment);
+    }
+
+    public void addLike(User user) {
+        if (!likes.contains(user)) {
+            likes.add(user);
+            likeCount = (likeCount == null) ? 1 : likeCount + 1;
+        }
+    }
+
+    public void removeLike(User user) {
+        if (likes.contains(user)) {
+            likes.remove(user);
+            likeCount = (likeCount == null || likeCount == 0) ? 0 : likeCount - 1;
+        }
+    }
+
 }
