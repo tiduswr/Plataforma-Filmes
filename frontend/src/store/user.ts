@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type User = {
+    image_path?: string[];
     user_id : string;
     username : string;
     name : string;

@@ -1,4 +1,4 @@
-import { publicAxiosInstance } from "@/axios/axios";
+import { privateAxiosInstance } from "@/axios/axios";
 import { LOGIN_MENU_LINKS } from "@/links";
 import useAuthStore from "@/store/auth";
 import useUserStore from "@/store/user";
@@ -13,15 +13,18 @@ const LoginAvatar = () => {
     const navigate = useNavigate();
 
     const getUserImage = useCallback(async () => {
+        if(!user?.image_path)
+            return;
+
         try{
             const path = `/users/profile-image/${user?.user_id}/small`;
-            const response = await publicAxiosInstance.get(path, { responseType: "blob" });
+            const response = await privateAxiosInstance.get(path, { responseType: "blob" });
             const imgUrl = URL.createObjectURL(response.data);
             setImg(imgUrl);
         }catch(error){
             console.error("O usuário ainda não possuí uma imagem de perfil.", error);
         }
-    }, [user?.user_id])
+    }, [user?.image_path, user?.user_id])
 
     const logout = () => {
         removeAuthCredentials();

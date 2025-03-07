@@ -1,6 +1,7 @@
 import { errorDisplay, privateAxiosInstance } from "@/axios/axios";
 import Button from "@/components/Button";
 import FormInput from "@/components/FormInput";
+import ImagePicker from "@/components/ImagePicker";
 import LoadingDots from "@/components/LoadingDots";
 import useUserStore, { User } from "@/store/user";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +15,6 @@ import { UserEditForm, userEditSchema } from "./types";
 
 const fetchUser = async ()  : Promise<User> => {    
     const response = await privateAxiosInstance.get<User>("/users/me");
-    console.log(response.data)
     return response.data;
 };
 
@@ -54,6 +54,15 @@ const UserDataEdit = () => {
     } = useForm<UserEditForm>({
         resolver: zodResolver(userEditSchema)
     });
+
+    const updateAdSetUserData = async () => {
+        try{
+            const data = await fetchUser();
+            setUserData(data);
+        }catch(error){
+            errorDisplay(error, (message) => toast.error(message));
+        }
+    }
 
     const { mutate } = useMutation<User, AxiosError, Partial<UserEditForm>>({
         mutationFn: updateUser,
@@ -95,8 +104,7 @@ const UserDataEdit = () => {
                 <div className="bg-white p-10 rounded shadow ml-5 mr-5 w-auto">
                     <LoadingDots />
                 </div>
-            </div>
-            
+            </div>            
         )
     }
 
@@ -121,11 +129,13 @@ const UserDataEdit = () => {
             <div className="flex flex-col items-center justify-center h-screen w-full">
                 <div className="bg-white p-10 rounded shadow ml-5 mr-5 w-auto md:w-2xl">
                     <h1 className="text-2xl font-medium">Editar dados cadastrais</h1>
+
+                    <ImagePicker classname="mb-4 mt-6" onUpdate={updateAdSetUserData}/>
                     <form
                         onSubmit={handleSubmit(onSubmit)}
                         className="flex flex-col gap-5 items-center justify-center"
-                    >
-                        <div className="w-full flex flex-col gap-2 mt-8 mb-8">            
+                    >                        
+                        <div className="w-full flex flex-col gap-2 mb-8">            
                             <FormInput 
                             name="username" 
                             label="Usuário" 
