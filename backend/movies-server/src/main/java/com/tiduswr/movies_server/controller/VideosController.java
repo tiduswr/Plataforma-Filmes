@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -24,6 +26,7 @@ import com.tiduswr.movies_server.models.ImageType;
 import com.tiduswr.movies_server.models.dto.CommentRequest;
 import com.tiduswr.movies_server.models.dto.CommentResponse;
 import com.tiduswr.movies_server.models.dto.PageResponse;
+import com.tiduswr.movies_server.models.dto.UserVideoMetadataResponse;
 import com.tiduswr.movies_server.models.dto.VideoMetadataResponse;
 import com.tiduswr.movies_server.models.dto.VideoUpdateRequest;
 import com.tiduswr.movies_server.models.dto.VideoUpdateResponse;
@@ -44,7 +47,10 @@ public class VideosController {
     public ResponseEntity<Void> uploadVideo(
             @RequestPart("file") MultipartFile file,
             @RequestPart("data") @Valid VideoUploadRequest videoData,
-            @AuthenticationPrincipal Jwt jwt) {
+            @AuthenticationPrincipal Jwt jwt,
+        @RequestHeader HttpHeaders headers) {
+    
+    System.out.println("Headers: " + headers);
         
         var userId = jwt.getSubject();
         videoService.validateVideoAndEnqueueTask(file, videoData, userId);
@@ -127,6 +133,19 @@ public class VideosController {
         
         var pageable = PageRequest.of(page, size);
         Page<VideoMetadataResponse> response = videoService.getVideos(filter, pageable);
+
+        return ResponseEntity.ok(PageResponse.from(response));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<PageResponse<UserVideoMetadataResponse>> myVideos(
+            @RequestParam(value = "filter", defaultValue = "") String filter,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @AuthenticationPrincipal Jwt jwt) {
+        
+        var pageable = PageRequest.of(page, size);
+        Page<UserVideoMetadataResponse> response = videoService.getMyVideos(filter, pageable, jwt.getSubject());
 
         return ResponseEntity.ok(PageResponse.from(response));
     }

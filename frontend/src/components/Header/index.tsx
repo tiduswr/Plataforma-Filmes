@@ -47,11 +47,14 @@ const Header = () => {
                     </div>
                     <div className={`${isMenuOpen ? "flex" : "hidden"} flex-col justify-between items-center w-full lg:flex lg:w-auto lg:order-1`} id="mobile-menu-2">
                         <ul className="flex flex-col text-sm font-medium lg:flex-row lg:space-x-8 lg:mt-0 w-full h-full mt-3 gap-2">
-                            {HEADER_LINKS.map(({ title, desc, icon: Icon }: HeaderLink, index) => (
-                                <li key={index} className={isMenuOpen ? `active:outline-1 active:outline-blue-700 active:text-blue-700` : ""}>
-                                    <UnderlineHoverButton title={title} desc={desc} icon={<Icon size={18} />} prepEndIcon={true} />
-                                </li>
-                            ))}
+                            {HEADER_LINKS
+                                .filter(({ privated }) => logged ? true : !privated)
+                                .map(({ title, desc, icon: Icon, url }: HeaderLink, index) => 
+                                    (<li key={index} className={isMenuOpen ? `active:outline-1 active:outline-blue-700 active:text-blue-700` : ""}>
+                                        <UnderlineHoverButton url={url} title={title} desc={desc} icon={<Icon size={18} />} prepEndIcon={true} />
+                                    </li>)
+                                )
+                            }
                         </ul>
                     </div>
                 </div>

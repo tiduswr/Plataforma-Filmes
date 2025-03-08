@@ -148,7 +148,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(VideoNotReadyException.class)
     public ResponseEntity<ErrorFullMessageResponse> handleVideoNotReadyException(VideoNotReadyException ex){
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.LOCKED)
                 .body(new ErrorFullMessageResponse("Erro ao recuperar video", ex.getMessage()));
     }
 

@@ -40,8 +40,7 @@ privateAxiosInstance.interceptors.request.use(
     const { token, expirationDate, removeAuthCredentials } = useAuthStore.getState();
 
     if (token && expirationDate) {
-      const expiresIn : Date = expirationDate;
-
+      const expiresIn : Date = new Date(expirationDate);
       if (new Date() > expiresIn) {
         removeAuthCredentials();
         console.warn("Token expirado. O usuário foi deslogado.");

@@ -6,6 +6,7 @@ type HeaderLink = {
     title: string;
     desc: string;
     icon: IconType;
+    privated: boolean;
 }
 
 type LoginMenuOptions = {
@@ -17,14 +18,16 @@ const LOGIN_LINK : HeaderLink = {
     url : "/login",
     title : "Login",
     desc: "Login",
-    icon : CiLogin
+    icon : CiLogin,
+    privated: false
 }
 
 const MOVIES_LINK : HeaderLink = {
-    url : "#",
-    title : "Filmes",
-    desc: "Filmes",
-    icon : CiVideoOn
+    url : "/my_movies",
+    title : "Meus Videos",
+    desc: "Meus Videos",
+    icon : CiVideoOn,
+    privated: true
 }
 
 const EDITAR_CADASTRO : LoginMenuOptions = {

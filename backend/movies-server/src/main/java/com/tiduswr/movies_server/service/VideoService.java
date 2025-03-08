@@ -24,6 +24,7 @@ import com.tiduswr.movies_server.models.User;
 import com.tiduswr.movies_server.models.VideoMetadata;
 import com.tiduswr.movies_server.models.dto.CommentRequest;
 import com.tiduswr.movies_server.models.dto.CommentResponse;
+import com.tiduswr.movies_server.models.dto.UserVideoMetadataResponse;
 import com.tiduswr.movies_server.models.dto.VideoMetadataResponse;
 import com.tiduswr.movies_server.models.dto.VideoTask;
 import com.tiduswr.movies_server.models.dto.VideoUpdateRequest;
@@ -76,6 +77,8 @@ public class VideoService {
                 .views(0l)
                 .likeCount(0l)
                 .duration(validated.videoTime())
+                .progressPercentage(0)
+                .progressInformation("Enfileirado para processamento")
                 .build();
             var videoSaved = videoMetaDataRepository.save(video);
 
@@ -111,6 +114,13 @@ public class VideoService {
         var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
             () -> new NotFoundException("Usuário não encontrado")
         );
+
+        var status = statusRepository.findByName(Status.Values.OK.name()).orElseThrow(
+            () -> new InternalServerError("Status OK não encontrado!")
+        );
+
+        if(!status.equals(video.getStatus()))
+            throw new VideoNotReadyException("O video ainda está em processamento");
     
         if (!video.getOwner().getUserId().equals(user.getUserId())) {
             throw new ResourceNotAllowedException("Você não tem permissão para excluir este vídeo");
@@ -208,6 +218,13 @@ public class VideoService {
         var video = videoMetaDataRepository.findById(UUID.fromString(videoId)).orElseThrow(
             () -> new NotFoundException("Video não encontrado")
         );
+
+        var status = statusRepository.findByName(Status.Values.OK.name()).orElseThrow(
+            () -> new InternalServerError("Status OK não encontrado!")
+        );
+
+        if(!status.equals(video.getStatus()))
+            throw new VideoNotReadyException("O video ainda está em processamento");
 
         var user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
             () -> new NotFoundException("Usuário não encontrado")
@@ -307,6 +324,14 @@ public class VideoService {
         return videoMetaDataRepository
             .searchVideosByTitle(filter, pageable)
             .map(VideoMetadataResponse::from);
+    }
+
+    public Page<UserVideoMetadataResponse> getMyVideos(String filter, Pageable pageable, String userId) {
+        var user = getUser(userId);
+
+        return videoMetaDataRepository
+            .searchUserVideosByTitle(filter, user, pageable)
+            .map(UserVideoMetadataResponse::from);
     }
 
     private User getUser(String userId){

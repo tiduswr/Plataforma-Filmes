@@ -6,6 +6,7 @@ type UnderlineHoverLinkProps = {
   prepEndIcon?: boolean;
   hoverColor?: string;
   desc?: string;
+  url?: string
 };
 
 export type { UnderlineHoverLinkProps };

@@ -7,11 +7,12 @@ const UnderlineHoverLink : React.FC<UnderlineHoverLinkProps> = ({
   prepEndIcon = false,
   hoverColor = "bg-blue-700",
   desc = "",
+  url = "#"
 }) => {
   return (
     <>
       <a
-        href="#"
+        href={url}
         className={clsx(
           "relative cursor-pointer flex flex-row gap-1 items-center group p-1 transition duration-300 overflow-hidden justify-center",
           prepEndIcon ? "pr-2" : "pl-2"

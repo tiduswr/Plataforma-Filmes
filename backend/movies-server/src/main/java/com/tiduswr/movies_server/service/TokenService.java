@@ -31,7 +31,7 @@ public class TokenService {
         }
 
         final Instant now = Instant.now();
-        final long expiresIn = 8600; // Em produção seria melhor usar access e refresh tokens
+        final long expiresIn = 86000; // Em produção seria melhor usar access e refresh tokens
 
         var claims = JwtClaimsSet.builder()
             .issuer("PlatFilmes")
