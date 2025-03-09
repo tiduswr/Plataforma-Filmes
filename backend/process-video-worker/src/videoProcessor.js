@@ -160,7 +160,7 @@ async function convertToHLS(inputPath, outputDir, resolution, baseUrl = "") {
                 '-b:a 128k',
                 '-ac 2',
                 '-f hls',
-                '-hls_time 1',
+                '-hls_time 5',
                 '-hls_playlist_type vod',
                 '-hls_flags independent_segments',
                 `-hls_segment_filename ${path.join(outputDir, `${name}-%03d.ts`)}`,
