@@ -48,7 +48,7 @@ const MoviePlayer = ({ video_id } : MoviePlayerProps) => {
                         'settings', 'fullscreen'
                     ],
                     quality: {
-                        default: availableQualities[0],
+                        default: 0,
                         options: availableQualities,
                         forced: true,
                         onChange: (newQuality: number) => {

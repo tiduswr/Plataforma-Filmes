@@ -27,7 +27,7 @@
 .video-container {
   overflow: hidden;
   border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.50);
 }
 
 .video-page-size-responsive {

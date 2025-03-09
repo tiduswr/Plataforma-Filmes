@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tiduswr.movies_server.models.ImageType;
 import com.tiduswr.movies_server.models.User;
 
-public record VideoOwnerResponse(
+public record CommentOwnerResponse(
     @JsonProperty("user_id")
     String userId,
     String username,
@@ -15,12 +15,12 @@ public record VideoOwnerResponse(
     List<String> imagePath
 ) {
 
-    public static VideoOwnerResponse from(User owner, boolean hasImage){
+    public static CommentOwnerResponse from(User owner, boolean hasImage){
         var userId = owner.getUserId().toString();
         var images = hasImage ? List.of(
             "/users/profile-image/" + userId + "/" + ImageType.BIG.name().toLowerCase(),
             "/users/profile-image/" + userId + "/" + ImageType.SMALL.name().toLowerCase()
         ) : null;
-        return new VideoOwnerResponse(owner.getUserId().toString(), 
+        return new CommentOwnerResponse(owner.getUserId().toString(), 
         owner.getUsername(), owner.getName(), images);
     }}

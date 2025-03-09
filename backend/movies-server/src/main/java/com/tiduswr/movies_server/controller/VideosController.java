@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.tiduswr.movies_server.models.ImageType;
 import com.tiduswr.movies_server.models.dto.CommentRequest;
 import com.tiduswr.movies_server.models.dto.CommentResponse;
+import com.tiduswr.movies_server.models.dto.LikeResponse;
 import com.tiduswr.movies_server.models.dto.PageResponse;
 import com.tiduswr.movies_server.models.dto.UserVideoMetadataResponse;
 import com.tiduswr.movies_server.models.dto.VideoMetadataResponse;
@@ -161,6 +162,19 @@ public class VideosController {
     public ResponseEntity<Void> toggleLike(@PathVariable("videoId") String videoId, @AuthenticationPrincipal Jwt jwt) {
         var userId = jwt.getSubject();
         videoService.toggleLike(UUID.fromString(videoId), UUID.fromString(userId));
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{videoId}/like")
+    public ResponseEntity<LikeResponse> userLiked(@PathVariable("videoId") String videoId, @AuthenticationPrincipal Jwt jwt) {
+        var userId = jwt.getSubject();
+        LikeResponse likeResponse = videoService.isUserLiked(UUID.fromString(videoId), UUID.fromString(userId));
+        return ResponseEntity.ok().body(likeResponse);
+    }
+
+    @PostMapping("/{videoId}/view")
+    public ResponseEntity<Void> incrementViews(@PathVariable("videoId") String videoId) {
+        videoService.incrementVideoViews(UUID.fromString(videoId));
         return ResponseEntity.noContent().build();
     }
 

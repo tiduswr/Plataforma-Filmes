@@ -8,13 +8,13 @@ public record CommentResponse(
 
     UUID comment_id,
     String content,
-    VideoOwnerResponse user,
+    CommentOwnerResponse user,
     UUID video_id
 
 ) {
 
-    public static CommentResponse from(Comment comment){
-        return new CommentResponse(comment.getCommentId(), comment.getContent(), VideoOwnerResponse.from(comment.getUser()), comment.getVideo().getVideoId());
+    public static CommentResponse from(Comment comment, boolean hasImage){
+        return new CommentResponse(comment.getCommentId(), comment.getContent(), CommentOwnerResponse.from(comment.getUser(), hasImage), comment.getVideo().getVideoId());
     }
 
 }

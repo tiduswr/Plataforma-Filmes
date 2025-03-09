@@ -5,8 +5,10 @@ import java.util.UUID;
 import org.springframework.amqp.AmqpException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.tiduswr.movies_server.config.minio.MinioBuckets;
 import com.tiduswr.movies_server.config.rbmq.QueueType;
@@ -24,6 +26,7 @@ import com.tiduswr.movies_server.models.User;
 import com.tiduswr.movies_server.models.VideoMetadata;
 import com.tiduswr.movies_server.models.dto.CommentRequest;
 import com.tiduswr.movies_server.models.dto.CommentResponse;
+import com.tiduswr.movies_server.models.dto.LikeResponse;
 import com.tiduswr.movies_server.models.dto.UserVideoMetadataResponse;
 import com.tiduswr.movies_server.models.dto.VideoMetadataResponse;
 import com.tiduswr.movies_server.models.dto.VideoTask;
@@ -33,6 +36,7 @@ import com.tiduswr.movies_server.models.dto.VideoUploadRequest;
 import com.tiduswr.movies_server.repository.StatusRepository;
 import com.tiduswr.movies_server.repository.UserRepository;
 import com.tiduswr.movies_server.repository.VideoCommentRepository;
+import com.tiduswr.movies_server.repository.VideoLikeRepository;
 import com.tiduswr.movies_server.repository.VideoMetaDataRepository;
 import com.tiduswr.movies_server.util.Util;
 
@@ -49,6 +53,8 @@ public class VideoService {
     private final UserRepository userRepository;
     private final TaskPublisherService taskPublisher;
     private final VideoCommentRepository commentRepository;
+    private final VideoLikeRepository videoLikeRepository;
+    private final UserService userService;
 
     @Transactional
     public void validateVideoAndEnqueueTask(MultipartFile file, VideoUploadRequest request, String userId){
@@ -260,8 +266,9 @@ public class VideoService {
         video.putComment(comment);
 
         var saved = commentRepository.save(comment);
+        var userHasImage = userService.userImageExists(user.getUserId().toString(), ImageType.SMALL);
 
-        return CommentResponse.from(saved);
+        return CommentResponse.from(saved, userHasImage);
     }
 
     public Page<CommentResponse> getCommentsFrom(String videoId, Pageable pageable) {
@@ -271,7 +278,11 @@ public class VideoService {
     
         Page<Comment> commentsPage = commentRepository.findByVideo(video, pageable);
     
-        return commentsPage.map(CommentResponse::from);
+        return commentsPage.map(c -> {
+            var owner = c.getUser();
+            var userHasImage = userService.userImageExists(owner.getUserId().toString(), ImageType.SMALL);
+            return CommentResponse.from(c, userHasImage);
+        });
     }
 
     @Transactional
@@ -298,10 +309,20 @@ public class VideoService {
         commentRepository.delete(comment);
     }
 
+    @Transactional
+    public void incrementVideoViews(UUID videoId) {
+        var video = videoMetaDataRepository.findById(videoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vídeo não encontrado"));
+        
+        video.setViews(video.getViews() + 1);
+        videoMetaDataRepository.save(video);
+    }
+
     public VideoMetadataResponse getVideoById(UUID videoId) {
         VideoMetadata video = videoMetaDataRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Vídeo não encontrado"));
-        return VideoMetadataResponse.from(video);
+        var userHasImage = userService.userImageExists(video.getOwner().getUserId().toString(), ImageType.BIG);
+        return VideoMetadataResponse.from(video, userHasImage);
     }
 
     public void toggleLike(UUID videoId, UUID userId) {
@@ -323,7 +344,11 @@ public class VideoService {
     public Page<VideoMetadataResponse> getVideos(String filter, Pageable pageable) {
         return videoMetaDataRepository
             .searchVideosByTitle(filter, pageable)
-            .map(VideoMetadataResponse::from);
+            .map(v -> {
+                var owner = v.getOwner();
+                var userHasImage = userService.userImageExists(owner.getUserId().toString(), ImageType.SMALL);
+                return VideoMetadataResponse.from(v, userHasImage);
+            });
     }
 
     public Page<UserVideoMetadataResponse> getMyVideos(String filter, Pageable pageable, String userId) {
@@ -340,6 +365,10 @@ public class VideoService {
             .orElseThrow(
                 () -> new NotFoundException("O usuário não foi encontrado")
         );
+    }
+
+    public LikeResponse isUserLiked(UUID video, UUID user) {
+        return new LikeResponse(videoLikeRepository.isVideoLikedByUser(video, user));
     }
 
 }

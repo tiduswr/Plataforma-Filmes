@@ -14,8 +14,8 @@ public record VideoMetadataResponse(
     VideoOwnerResponse owner,
     Boolean visible
 ) {
-    public static VideoMetadataResponse from(VideoMetadata v){
-        var owner = VideoOwnerResponse.from(v.getOwner());
+    public static VideoMetadataResponse from(VideoMetadata v, boolean userHasImage){
+        var owner = VideoOwnerResponse.from(v.getOwner(), userHasImage);
 
         return new VideoMetadataResponse(
             v.getVideoId(), 
