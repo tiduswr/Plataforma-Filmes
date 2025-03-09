@@ -1,22 +1,57 @@
 @import "tailwindcss";
 
 @keyframes jump {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+
+  0%,
+  100% {
+    transform: translateY(0);
   }
-  
-  .animate-jump {
-    animation: jump 1s ease-in-out infinite;
+
+  50% {
+    transform: translateY(-10px);
   }
-  
-  .animate-jump-400 {
-    animation: jump 1s ease-in-out infinite 0.4s;
+}
+
+.animate-jump {
+  animation: jump 1s ease-in-out infinite;
+}
+
+.animate-jump-400 {
+  animation: jump 1s ease-in-out infinite 0.4s;
+}
+
+.animate-jump-800 {
+  animation: jump 1s ease-in-out infinite 0.8s;
+}
+
+.video-container {
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.75);
+}
+
+.video-page-size-responsive {
+  width: 60%;
+  height: 100%;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+@media (max-width: 1320px) {
+  .video-page-size-responsive {
+    width: 80%;
+    height: 100%;
   }
-  
-  .animate-jump-800 {
-    animation: jump 1s ease-in-out infinite 0.8s;
+}
+
+@media (max-width: 768px) {
+  .video-container {    
+    margin-left: 10px;
+    margin-right: 10px;
   }
+
+  .video-page-size-responsive {
+    width: auto;
+    height: auto;
+  }
+}

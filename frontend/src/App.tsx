@@ -7,6 +7,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/PrivateRoute";
+import Movie from "./pages/Movie";
 import MyMovies from "./pages/MyMovies";
 import Subscribe from "./pages/Subscribe";
 import UserDataEdit from "./pages/UserDataEdit";
@@ -37,6 +38,9 @@ const App: React.FC = () => {
                         </Route>
                         <Route element={<DefaultLayout />}>
                             <Route path="/my_movies" element={<MyMovies />} />
+                        </Route>
+                        <Route element={<DefaultLayout />}>
+                            <Route path="/movies/:video_id" element={<Movie />} />
                         </Route>
                     </Route>
 

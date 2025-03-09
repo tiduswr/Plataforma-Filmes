@@ -2,6 +2,7 @@ import { BiError } from "react-icons/bi";
 import { CiEdit, CiTrash } from "react-icons/ci";
 import { GoClock } from "react-icons/go";
 import { MdDone } from "react-icons/md";
+import { Link } from "react-router-dom";
 import { UserMoviesTableProps } from "./types";
 
 const UserMoviesTable = ({ movies, onEdit, onDelete, className = "" }: UserMoviesTableProps) => {
@@ -22,14 +23,16 @@ const UserMoviesTable = ({ movies, onEdit, onDelete, className = "" }: UserMovie
             </tr>
           </thead>
           <tbody>
-            {movies.map(({ title, duration, progress_information, progress_percentage, views, status, video_id }, i) => (
+            {movies.length > 0 ? movies.map(({ title, duration, progress_information, progress_percentage, views, status, video_id }, i) => (
               <tr className="bg-white rounded-b-lg border-t border-gray-200" key={video_id}>
                 <td hidden={true}>{video_id}</td>
-                <th className={`px-6 py-4 font-medium text-gray-900 whitespace-nowrap ${i + 1 === movies.length ? "rounded-bl-lg" : ""}`}>{title}</th>
+                <th className={`px-6 py-4 font-medium text-gray-900 whitespace-nowrap ${i + 1 === movies.length ? "rounded-bl-lg" : ""}`}>
+                  <Link to={`/movies/${video_id}`} className="text-blue-600 underline">{title}</Link>
+                </th>
                 <td className="px-3 py-4 text-center">{duration}</td>
                 <td className="px-3 py-4 text-center">
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress_percentage}%` }}></div>
+                    <div className="bg-green-600 h-2.5 rounded-full" style={{ width: `${progress_percentage}%` }}></div>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">{progress_information}</p>               
                 </td>
@@ -56,7 +59,15 @@ const UserMoviesTable = ({ movies, onEdit, onDelete, className = "" }: UserMovie
                   </div>
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr className="bg-white rounded-b-lg border-t border-gray-200" key={0}>
+                <td className="px-3 py-4" colSpan={7}>
+                  <div className="text-center">
+                    Nenhum resultado encontrado!
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

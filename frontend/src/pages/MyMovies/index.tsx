@@ -2,11 +2,13 @@ import { errorDisplay, privateAxiosInstance } from "@/axios/axios";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 import { ModalMessage } from "@/components/ConfirmDeleteModal/type";
 import EditVideoModal from "@/components/EditVideoModal";
+import LoadingDots from "@/components/LoadingDots";
 import UploadVideoModal from "@/components/UploadVideoModal";
 import UserMoviesTable from "@/components/UserMoviesTable";
 import { useQuery } from "@tanstack/react-query";
 import { CircleArrowLeft, CircleArrowRight, UploadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BiSolidError } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { UserMoviesTablePageable } from "./types";
 
@@ -30,7 +32,7 @@ const MyMovies = () => {
       if (filter.length >= 3 || filter === "") {
         setDebouncedFilter(filter);
       }
-    }, 500);
+    }, 200);
 
     return () => clearTimeout(handler);
   }, [filter]);
@@ -73,6 +75,32 @@ const MyMovies = () => {
     }
   };
 
+  if(isLoading){
+    return (
+        <div className="flex flex-col items-center justify-center h-screen w-full">
+            <div className="bg-white p-10 rounded shadow ml-5 mr-5 w-auto">
+                <LoadingDots />
+            </div>
+        </div>            
+    )
+}
+
+  if(error){
+      return (
+          <div className="flex flex-col items-center justify-center h-screen w-full">
+              <div className="bg-white p-10 rounded shadow ml-5 mr-5 w-auto md:w-3xl">
+                  <div className="flex flex-col gap-3 items-center justify-center text-center">
+                      <div className="flex flex-row items-center justify-center">
+                          <BiSolidError size={50} className="text-red-600"/>
+                          <h1 className="font-bold text-3xl">{error.message}</h1>
+                      </div>
+                      <p>{error.stack}</p>
+                  </div>
+              </div>
+          </div>
+      )
+  }
+
   return (
     <div className="flex flex-col items-center mt-22 mx-5 lg:mx-22 mb-8">
       <div className="w-full flex flex-row items-center justify-between gap-4 mb-4">
@@ -92,8 +120,6 @@ const MyMovies = () => {
         </button>
       </div>
 
-      {isLoading && <p>Carregando vídeos...</p>}
-      {error && <p className="text-red-500">Erro ao carregar vídeos</p>}
       {movies && (
         <>
           <UserMoviesTable 
@@ -101,23 +127,25 @@ const MyMovies = () => {
             onEdit={onEditClick} 
             onDelete={onDeleteClick}
           />
-          <div className="flex felx-row gap-4 justify-center items-center w-full mt-4">
-            <button 
-              disabled={movies.first} 
-              onClick={() => setPage((prev) => Math.max(prev - 1, 0))} 
-              className="px-4 py-2 bg-blue-600 rounded disabled:bg-gray-700 disabled:opacity-50"
-            >
-              <CircleArrowLeft color="white"/>
-            </button>
-            <span>Página {movies.number + 1} de {movies.totalPages}</span>
-            <button 
-              disabled={movies.last} 
-              onClick={() => setPage((prev) => prev + 1)} 
-              className="px-4 py-2 bg-blue-600 rounded disabled:bg-gray-700 disabled:opacity-50"
-            >
-              <CircleArrowRight color="white"/>
-            </button>
-          </div>
+          {movies.totalPages > 0 && 
+            <div className="flex felx-row gap-4 justify-center items-center w-full mt-4">
+              <button 
+                disabled={movies.first} 
+                onClick={() => setPage((prev) => Math.max(prev - 1, 0))} 
+                className="px-4 py-2 bg-blue-600 rounded cursor-pointer disabled:cursor-default disabled:bg-gray-700 disabled:opacity-50"
+              >
+                <CircleArrowLeft color="white"/>
+              </button>            
+              <span>Página {movies.number + 1} de {movies.totalPages}</span>
+              <button 
+                disabled={movies.last} 
+                onClick={() => setPage((prev) => prev + 1)} 
+                className="px-4 py-2 bg-blue-600 rounded cursor-pointer disabled:cursor-default disabled:bg-gray-700 disabled:opacity-50"
+              >
+                <CircleArrowRight color="white"/>
+              </button>
+            </div>
+          }          
         </>
       )}
 
